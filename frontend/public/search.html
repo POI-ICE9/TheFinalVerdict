@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Cerca Anime</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        
+        .search-box { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; margin-bottom: 20px; }
+        .search-box h2 { color: #e65100; margin-bottom: 15px; }
+        .search-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .search-row input, .search-row select { padding: 8px 12px; border: 1px solid #999; border-radius: 3px; font-size: 13px; font-family: Arial, sans-serif; }
+        .search-row input { flex: 1; min-width: 200px; }
+        .search-row input:focus, .search-row select:focus { outline: none; border-color: #f57c00; }
+        
+        .btn { padding: 8px 16px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 12px; border-radius: 2px; }
+        .btn:hover { background: #d0d0d0; }
+        .btn-primary { background: #f57c00; color: #fff; border-color: #e65100; }
+        .btn-primary:hover { background: #e65100; }
+        
+        .results { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; overflow: hidden; }
+        .result-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .result-item:hover { background: #fff3e0; }
+        .result-info h4 { color: #333; margin-bottom: 5px; }
+        .result-info h4 a { color: #0000ff; text-decoration: none; }
+        .result-info h4 a:hover { text-decoration: underline; }
+        .result-meta { font-size: 11px; color: #666; }
+        .result-stats { text-align: right; }
+        .result-stats .count { font-size: 20px; font-weight: bold; color: #e65100; }
+        .result-stats .label { font-size: 11px; color: #666; }
+        
+        .pagination { padding: 15px; background: #f9f9f9; border-top: 1px solid #d3d3d3; display: flex; justify-content: space-between; align-items: center; }
+        .page-btn { padding: 5px 10px; border: 1px solid #999; background: #fff; cursor: pointer; margin: 0 2px; }
+        .page-btn.active { background: #f57c00; color: #fff; border-color: #e65100; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="profile.html">Profilo</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-box">
+            <h2>🔍 Cerca Anime nel Database</h2>
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Nome dell'anima...">
+                <select id="categoryFilter">
+                    <option value="">Tutte le categorie</option>
+                    <option value="historical">Personaggi Storici</option>
+                    <option value="celebrity">Celebrità</option>
+                    <option value="fictional">Personaggi di Finzione</option>
+                    <option value="personal">Persone Personali</option>
+                </select>
+                <select id="epochFilter">
+                    <option value="">Tutte le epoche</option>
+                    <option value="ancient">Antichità</option>
+                    <option value="medieval">Medioevo</option>
+                    <option value="modern">Età Moderna</option>
+                    <option value="contemporary">Contemporanea</option>
+                </select>
+                <button class="btn btn-primary" onclick="search()">Cerca</button>
+                <button class="btn" onclick="resetSearch()">Reset</button>
+            </div>
+        </div>
+
+        <div class="results" id="results">
+            <div style="padding:40px; text-align:center; color:#666;">Inizia a cercare per vedere i risultati</div>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        if (!token) window.location.href = 'login.html';
+
+        let currentPage = 1;
+
+        async function search(page = 1) {
+            currentPage = page;
+            const query = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            
+            const params = new URLSearchParams({ search: query, status: 'approved', page, limit: 20 });
+            if (category) params.append('category', category);
+
+            try {
+                const response = await fetch(`/api/v1/souls?${params}`);
+                const data = await response.json();
+                
+                const results = document.getElementById('results');
+                if (data.souls.length === 0) {
+                    results.innerHTML = '<div style="padding:40px; text-align:center; color:#666;">Nessun risultato trovato</div>';
+                    return;
+                }
+
+                results.innerHTML = `
+                    ${data.souls.map(s => `
+                        <div class="result-item">
+                            <div class="result-info">
+                                <h4><a href="soul-detail.html?id=${s.id}">${s.name}</a></h4>
+                                <div class="result-meta">${s.category} ${s.epoch ? '• ' + s.epoch : ''} ${s.nationality ? '• ' + s.nationality : ''}</div>
+                            </div>
+                            <div class="result-stats">
+                                <div class="count">${s.total_judgments}</div>
+                                <div class="label">giudizi</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    <div class="pagination">
+                        <div>Totale: ${data.pagination.total} anime</div>
+                        <div>
+                            ${Array.from({length: Math.min(5, data.pagination.pages)}, (_, i) => 
+                                `<button class="page-btn ${i+1 === page ? 'active' : ''}" onclick="search(${i+1})">${i+1}</button>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('results').innerHTML = '<div style="padding:40px; text-align:center; color:#f44336;">Errore di caricamento</div>';
+            }
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('epochFilter').value = '';
+            document.getElementById('results').innerHTML = '<div style="padding:40px; text-align:center; color:#666;">Inizia a cercare per vedere i risultati</div>';
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') search();
+        });
+    </script>
+</body>
+</html>

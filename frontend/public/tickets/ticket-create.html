@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Nuovo Ticket</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 700px; margin: 30px auto; padding: 0 20px; }
+        
+        .form-card { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 30px; }
+        .form-card h2 { color: #e65100; margin-bottom: 20px; font-size: 22px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 12px; }
+        .form-hint { font-size: 11px; color: #666; margin-top: 3px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid #999; border-radius: 3px; font-size: 13px; font-family: Arial, sans-serif; }
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #f57c00; }
+        
+        .btn { padding: 10px 20px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 13px; border-radius: 2px; }
+        .btn:hover { background: #d0d0d0; }
+        .btn-primary { background: #f57c00; color: #fff; border-color: #e65100; font-weight: bold; }
+        .btn-primary:hover { background: #e65100; }
+        
+        .alert { padding: 10px; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+        .alert-error { background: #f8d7da; border: 1px solid #f44336; color: #721c24; }
+        .alert-success { background: #d4edda; border: 1px solid #4caf50; color: #155724; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="../dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="../dashboard.html">Dashboard</a>
+            <a href="tickets-list.html">I Miei Ticket</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-card">
+            <h2>🎫 Crea Nuovo Ticket di Supporto</h2>
+            <div id="alertBox"></div>
+            <form id="ticketForm">
+                <div class="form-group">
+                    <label class="form-label">Categoria *</label>
+                    <select class="form-select" id="category" required>
+                        <option value="">Seleziona...</option>
+                        <option value="technical">Problema Tecnico</option>
+                        <option value="account">Problema Account</option>
+                        <option value="report">Segnalazione Contenuto</option>
+                        <option value="feature_request">Richiesta Nuova Funzionalità</option>
+                        <option value="other">Altro</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priorità</label>
+                    <select class="form-select" id="priority">
+                        <option value="low">Bassa</option>
+                        <option value="medium" selected>Media</option>
+                        <option value="high">Alta</option>
+                        <option value="urgent">Urgente</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Oggetto * (max 255 caratteri)</label>
+                    <input type="text" class="form-input" id="subject" required maxlength="255">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrizione * (min. 20 caratteri)</label>
+                    <textarea class="form-textarea" id="description" required minlength="20" maxlength="10000"></textarea>
+                    <div class="form-hint"><span id="charCount">0</span>/10000 caratteri</div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Allegato (opzionale, max 5MB)</label>
+                    <input type="file" class="form-input" id="attachment" accept="image/*,.pdf">
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <button type="submit" class="btn btn-primary"> Invia Ticket</button>
+                    <a href="tickets-list.html" class="btn">Annulla</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        if (!token) window.location.href = '../login.html';
+
+        document.getElementById('description').addEventListener('input', (e) => {
+            document.getElementById('charCount').textContent = e.target.value.length;
+        });
+
+        document.getElementById('ticketForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alertBox = document.getElementById('alertBox');
+            
+            const data = {
+                category: document.getElementById('category').value,
+                priority: document.getElementById('priority').value,
+                subject: document.getElementById('subject').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                const response = await fetch('/api/v1/tickets', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alertBox.innerHTML = `<div class="alert alert-success">Ticket #${result.ticket.ticket_number} creato con successo! Riceverai una email di conferma.</div>`;
+                    setTimeout(() => window.location.href = 'tickets-list.html', 2000);
+                } else {
+                    const result = await response.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">${result.error || 'Errore nella creazione'}</div>`;
+                }
+            } catch (error) {
+                alertBox.innerHTML = '<div class="alert alert-error">Errore di connessione</div>';
+            }
+        });
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = '../login.html';
+            }
+        }
+    </script>
+</body>
+</html>

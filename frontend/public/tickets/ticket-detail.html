@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Dettaglio Ticket</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        
+        .ticket-header { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; margin-bottom: 20px; }
+        .ticket-header h2 { color: #e65100; margin-bottom: 10px; }
+        .ticket-meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 15px; }
+        .ticket-meta span { background: #f5f5f5; padding: 4px 10px; border-radius: 3px; }
+        .ticket-status { padding: 4px 12px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+        .status-open { background: #bbdefb; color: #1565c0; }
+        .status-in_progress { background: #ffe0b2; color: #ef6c00; }
+        .status-resolved { background: #c8e6c9; color: #2e7d32; }
+        
+        .conversation { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; margin-bottom: 20px; }
+        .conversation h3 { color: #e65100; margin-bottom: 15px; border-bottom: 2px solid #f57c00; padding-bottom: 8px; }
+        
+        .message { padding: 15px; margin-bottom: 15px; border-left: 3px solid #f57c00; background: #fafafa; }
+        .message.staff { border-left-color: #1976d2; background: #e3f2fd; }
+        .message-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
+        .message-author { font-weight: bold; color: #333; }
+        .message-time { color: #999; }
+        .message-body { color: #333; line-height: 1.5; white-space: pre-wrap; }
+        
+        .reply-form { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; }
+        .reply-form h3 { color: #e65100; margin-bottom: 15px; }
+        .form-textarea { width: 100%; padding: 10px; border: 1px solid #999; border-radius: 3px; font-size: 13px; font-family: Arial, sans-serif; min-height: 100px; resize: vertical; margin-bottom: 10px; }
+        .form-textarea:focus { outline: none; border-color: #f57c00; }
+        
+        .btn { padding: 8px 16px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 12px; border-radius: 2px; }
+        .btn:hover { background: #d0d0d0; }
+        .btn-primary { background: #f57c00; color: #fff; border-color: #e65100; }
+        .btn-primary:hover { background: #e65100; }
+        
+        .rating-section { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; margin-top: 20px; }
+        .stars { font-size: 24px; cursor: pointer; }
+        .star { color: #ddd; }
+        .star.active { color: #ffd700; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="../dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="../dashboard.html">Dashboard</a>
+            <a href="tickets-list.html">I Miei Ticket</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="ticket-header" id="ticketHeader">Caricamento...</div>
+        
+        <div class="conversation">
+            <h3>💬 Conversazione</h3>
+            <div id="messagesList">Caricamento...</div>
+        </div>
+
+        <div class="reply-form" id="replyForm">
+            <h3>✏️ Rispondi al Ticket</h3>
+            <textarea class="form-textarea" id="replyMessage" placeholder="Scrivi la tua risposta..."></textarea>
+            <button class="btn btn-primary" onclick="sendReply()">📤 Invia Risposta</button>
+        </div>
+
+        <div class="rating-section" id="ratingSection" style="display:none;">
+            <h3>⭐ Valuta il Supporto Ricevuto</h3>
+            <p style="margin-bottom:10px; color:#666;">Come valuti la qualità del supporto ricevuto?</p>
+            <div class="stars" id="stars">
+                <span class="star" data-value="1">★</span>
+                <span class="star" data-value="2">★</span>
+                <span class="star" data-value="3">★</span>
+                <span class="star" data-value="4">★</span>
+                <span class="star" data-value="5">★</span>
+            </div>
+            <textarea class="form-textarea" id="ratingComment" placeholder="Commento opzionale..." style="margin-top:15px;"></textarea>
+            <button class="btn btn-primary" onclick="submitRating()" style="margin-top:10px;">Invia Valutazione</button>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        if (!token) window.location.href = '../login.html';
+
+        const params = new URLSearchParams(window.location.search);
+        const ticketId = params.get('id');
+        let currentRating = 0;
+
+        async function loadTicket() {
+            try {
+                const response = await fetch(`/api/v1/tickets/${ticketId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const t = data.ticket;
+
+                document.getElementById('ticketHeader').innerHTML = `
+                    <h2>#${t.ticket_number} - ${t.subject}</h2>
+                    <div class="ticket-meta">
+                        <span>Categoria: ${t.category}</span>
+                        <span>Priorità: ${t.priority}</span>
+                        <span class="ticket-status status-${t.status}">${t.status}</span>
+                        <span>Creato: ${new Date(t.created_at).toLocaleString()}</span>
+                        ${t.assigned_to ? `<span>Assegnato a: ${t.assignee?.username}</span>` : ''}
+                    </div>
+                    <div style="margin-top:15px; padding:15px; background:#f5f5f5; border-radius:3px; line-height:1.5;">${t.description}</div>
+                `;
+
+                const messagesList = document.getElementById('messagesList');
+                if (t.messages && t.messages.length > 0) {
+                    const myId = JSON.parse(localStorage.getItem('user')).id;
+                    messagesList.innerHTML = t.messages.map(m => `
+                        <div class="message ${['admin','founder','support','moderator'].includes(m.sender?.role) ? 'staff' : ''}">
+                            <div class="message-header">
+                                <span class="message-author">${m.sender?.username || 'Sistema'} ${m.sender?.role ? '(' + m.sender.role + ')' : ''}</span>
+                                <span class="message-time">${new Date(m.created_at).toLocaleString()}</span>
+                            </div>
+                            <div class="message-body">${m.message}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    messagesList.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">Nessun messaggio</div>';
+                }
+
+                if (t.status === 'resolved' && !t.rating) {
+                    document.getElementById('ratingSection').style.display = 'block';
+                }
+
+                if (t.status === 'closed') {
+                    document.getElementById('replyForm').style.display = 'none';
+                }
+            } catch (error) { console.error(error); }
+        }
+
+        async function sendReply() {
+            const message = document.getElementById('replyMessage').value.trim();
+            if (!message) return;
+
+            try {
+                const response = await fetch(`/api/v1/tickets/${ticketId}/reply`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ message })
+                });
+
+                if (response.ok) {
+                    document.getElementById('replyMessage').value = '';
+                    loadTicket();
+                } else {
+                    alert('Errore nell\'invio');
+                }
+            } catch (error) { alert('Errore di connessione'); }
+        }
+
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                currentRating = parseInt(star.dataset.value);
+                document.querySelectorAll('.star').forEach((s, i) => {
+                    s.classList.toggle('active', i < currentRating);
+                });
+            });
+        });
+
+        async function submitRating() {
+            if (currentRating === 0) { alert('Seleziona almeno una stella'); return; }
+            
+            try {
+                await fetch(`/api/v1/tickets/${ticketId}/rate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ rating: currentRating, rating_comment: document.getElementById('ratingComment').value })
+                });
+                alert('Grazie per la valutazione!');
+                document.getElementById('ratingSection').style.display = 'none';
+            } catch (error) { alert('Errore'); }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = '../login.html';
+            }
+        }
+
+        loadTicket();
+    </script>
+</body>
+</html>

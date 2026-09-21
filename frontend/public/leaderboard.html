@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Classifiche</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        
+        .tabs { display: flex; background: #fff; border: 1px solid #d3d3d3; border-radius: 3px 3px 0 0; overflow: hidden; }
+        .tab { padding: 12px 20px; cursor: pointer; border: none; background: #e0e0e0; font-size: 13px; font-weight: 500; border-right: 1px solid #d3d3d3; }
+        .tab:hover { background: #f0f0f0; }
+        .tab.active { background: #f57c00; color: #fff; }
+        
+        .content { background: #fff; border: 1px solid #d3d3d3; border-top: none; border-radius: 0 0 3px 3px; padding: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f5f5; padding: 10px; text-align: left; border: 1px solid #ddd; font-size: 12px; }
+        td { padding: 10px; border: 1px solid #ddd; }
+        tr:nth-child(even) { background: #fafafa; }
+        tr:hover { background: #fff3e0; }
+        .rank { font-weight: bold; font-size: 16px; text-align: center; }
+        .rank-1 { color: #ffd700; }
+        .rank-2 { color: #c0c0c0; }
+        .rank-3 { color: #cd7f32; }
+        
+        .user-cell { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #f57c00; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="search.html">Cerca</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('judges', this)">🏆 Top Giudici</button>
+            <button class="tab" onclick="showTab('realms', this)">🏛️ Top Aldilà</button>
+            <button class="tab" onclick="showTab('sentences', this)"> Top Sentenze</button>
+        </div>
+        <div class="content" id="tabContent">Caricamento...</div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        if (!token) window.location.href = 'login.html';
+
+        async function showTab(type, btn) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const content = document.getElementById('tabContent');
+            content.innerHTML = 'Caricamento...';
+
+            try {
+                const response = await fetch(`/api/v1/leaderboard/${type}`);
+                const data = await response.json();
+                
+                if (type === 'judges') {
+                    content.innerHTML = `<table>
+                        <thead><tr><th>#</th><th>Utente</th><th>Livello</th><th>Karma</th><th>XP</th></tr></thead>
+                        <tbody>${data.leaderboard.map((u, i) => `
+                            <tr>
+                                <td class="rank ${i < 3 ? 'rank-'+(i+1) : ''}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i+1}</td>
+                                <td><div class="user-cell"><div class="user-avatar">${u.username[0].toUpperCase()}</div><strong>${u.username}</strong></div></td>
+                                <td style="text-align:center;">${u.level}</td>
+                                <td style="text-align:center; font-weight:bold; color:#e65100;">${u.karma}</td>
+                                <td style="text-align:center;">${u.xp}</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`;
+                } else if (type === 'realms') {
+                    content.innerHTML = `<table>
+                        <thead><tr><th>#</th><th>Aldilà</th><th>Proprietario</th><th>Visite</th><th>Anime</th></tr></thead>
+                        <tbody>${data.realms.map((r, i) => `
+                            <tr>
+                                <td class="rank">${i+1}</td>
+                                <td><strong>${r.custom_name || r.realm_type}</strong></td>
+                                <td>${r.user?.username}</td>
+                                <td style="text-align:center;">${r.visit_count}</td>
+                                <td style="text-align:center;">${r.souls_count}</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`;
+                } else {
+                    content.innerHTML = `<table>
+                        <thead><tr><th>#</th><th>Anima</th><th>Giudice</th><th>Regno</th><th>Voti</th></tr></thead>
+                        <tbody>${data.sentences.map((s, i) => `
+                            <tr>
+                                <td class="rank">${i+1}</td>
+                                <td>${s.soul?.name}</td>
+                                <td>${s.user?.username}</td>
+                                <td>${s.realm?.realm_type}</td>
+                                <td style="text-align:center;">-</td>
+                            </tr>
+                        `).join('')}</tbody>
+                    </table>`;
+                }
+            } catch (error) { content.innerHTML = 'Errore di caricamento'; }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        showTab('judges', document.querySelector('.tab'));
+    </script>
+</body>
+</html>

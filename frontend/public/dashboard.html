@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Il Mio Aldilà</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; }
+        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right { display: flex; align-items: center; gap: 15px; color: #fff; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; font-size: 12px; }
+        .header-right a:hover { background: rgba(255,255,255,0.3); }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #e65100; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        .menu-tabs { display: flex; background: rgba(255,255,255,0.1); padding: 0 20px; }
+        .menu-tab { padding: 10px 20px; color: #fff; cursor: pointer; border: none; background: none; font-size: 13px; font-weight: 500; }
+        .menu-tab:hover { background: rgba(255,255,255,0.2); }
+        .menu-tab.active { background: #fff; color: #e65100; }
+        
+        .container { display: flex; min-height: calc(100vh - 100px); }
+        
+        .sidebar { width: 200px; background: linear-gradient(to bottom, #87ceeb 0%, #1976d2 100%); border-right: 2px solid #1565c0; padding: 10px; }
+        .sidebar-title { font-weight: bold; font-size: 12px; margin-bottom: 10px; color: #fff; }
+        .sidebar-menu { list-style: none; }
+        .sidebar-menu li { padding: 8px; color: #fff; cursor: pointer; border-radius: 3px; margin-bottom: 2px; display: flex; align-items: center; gap: 6px; }
+        .sidebar-menu li:hover { background: rgba(255,255,255,0.2); }
+        .sidebar-menu li.active { background: rgba(255,255,255,0.4); font-weight: bold; }
+        .sidebar-section { margin-top: 15px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.3); }
+        
+        .main-content { flex: 1; padding: 20px; }
+        
+        .page-header { background: #fff; border: 1px solid #d3d3d3; padding: 15px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-radius: 3px; }
+        .page-title { font-size: 18px; color: #333; font-weight: bold; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: #fff; border: 1px solid #d3d3d3; padding: 15px; border-radius: 3px; }
+        .stat-label { font-size: 11px; color: #666; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #e65100; }
+        
+        .realms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 20px; }
+        .realm-card { border: 1px solid #d3d3d3; border-radius: 3px; overflow: hidden; background: #fff; }
+        .realm-header { padding: 15px; color: #fff; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .realm-inferno .realm-header { background: linear-gradient(to right, #d32f2f, #b71c1c); }
+        .realm-purgatorio .realm-header { background: linear-gradient(to right, #f57c00, #e65100); }
+        .realm-paradiso .realm-header { background: linear-gradient(to right, #fbc02d, #f9a825); color: #333; }
+        .realm-count { background: rgba(255,255,255,0.3); padding: 3px 10px; border-radius: 10px; font-size: 12px; }
+        .realm-paradiso .realm-count { background: rgba(0,0,0,0.1); }
+        .realm-body { padding: 15px; min-height: 200px; }
+        .soul-item { padding: 10px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .soul-item:last-child { border-bottom: none; }
+        .soul-name { font-weight: bold; color: #333; }
+        .soul-reason { font-size: 11px; color: #666; margin-top: 3px; }
+        .soul-actions { display: flex; gap: 5px; }
+        .btn-small { padding: 4px 8px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 11px; border-radius: 2px; }
+        .btn-small:hover { background: #d0d0d0; }
+        .btn-add { width: 100%; padding: 10px; background: #f5f5f5; border: 2px dashed #f57c00; color: #f57c00; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .btn-add:hover { background: #fff3e0; }
+        
+        .btn { padding: 6px 12px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 12px; border-radius: 2px; }
+        .btn:hover { background: #d0d0d0; }
+        .btn-primary { background: #f57c00; color: #fff; border-color: #e65100; }
+        .btn-primary:hover { background: #e65100; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #fff; border: 2px solid #d3d3d3; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; border-radius: 3px; }
+        .modal-header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); padding: 10px 15px; border-bottom: 2px solid #f57c00; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { color: #fff; font-size: 16px; font-weight: bold; }
+        .close-btn { background: #e0e0e0; border: 1px solid #999; width: 24px; height: 24px; cursor: pointer; font-size: 16px; }
+        .modal-body { padding: 20px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 12px; }
+        .form-input, .form-select, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid #999; border-radius: 3px; font-size: 13px; font-family: Arial, sans-serif; }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: #f57c00; }
+        
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px 20px; text-align: center; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict</span>
+            </a>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span id="userName">Utente</span>
+                </div>
+                <a href="notifications.html"> <span id="notifCount">0</span></a>
+                <a href="messages.html">✉️ Messaggi</a>
+                <a href="profile.html">Profilo</a>
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <div class="menu-tab active" onclick="showSection('dashboard')">Il Mio Aldilà</div>
+            <div class="menu-tab" onclick="showSection('search')">Cerca Anime</div>
+            <div class="menu-tab" onclick="showSection('leaderboard')">Classifiche</div>
+            <div class="menu-tab" onclick="showSection('tickets')">Ticket</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title"> Menu</div>
+            <ul class="sidebar-menu">
+                <li class="active" onclick="showSection('dashboard')">️ Il Mio Aldilà</li>
+                <li onclick="showSection('search')">🔍 Cerca Anime</li>
+                <li onclick="showSection('leaderboard')">🏆 Classifiche</li>
+                <li onclick="window.location.href='messages.html'">✉️ Messaggi</li>
+                <li onclick="window.location.href='notifications.html'">🔔 Notifiche</li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👤 Account</div>
+                <ul class="sidebar-menu">
+                    <li onclick="window.location.href='profile.html'">Profilo</li>
+                    <li onclick="window.location.href='settings.html'">Impostazioni</li>
+                    <li onclick="window.location.href='tickets/tickets-list.html'">🎫 Ticket</li>
+                    <li onclick="logout()">Logout</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active">
+                <div class="page-header">
+                    <div class="page-title">🏛️ Il Mio Aldilà</div>
+                    <button class="btn btn-primary" onclick="openModal('addSoulModal')">+ Aggiungi Anima</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-label">Anime Giudicate</div>
+                        <div class="stat-value" id="totalSouls">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Visite Ricevute</div>
+                        <div class="stat-value" id="totalVisits">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Livello</div>
+                        <div class="stat-value" id="userLevel">1</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-label">Karma</div>
+                        <div class="stat-value" id="userKarma">0</div>
+                    </div>
+                </div>
+
+                <div class="realms-grid">
+                    <div class="realm-card realm-inferno">
+                        <div class="realm-header">
+                            <span>🔥 Inferno</span>
+                            <span class="realm-count" id="infernoCount">0 anime</span>
+                        </div>
+                        <div class="realm-body" id="infernoList"></div>
+                        <button class="btn-add" onclick="openAddSoul('inferno')">+ Aggiungi all'Inferno</button>
+                    </div>
+                    <div class="realm-card realm-purgatorio">
+                        <div class="realm-header">
+                            <span>⛰️ Purgatorio</span>
+                            <span class="realm-count" id="purgatorioCount">0 anime</span>
+                        </div>
+                        <div class="realm-body" id="purgatorioList"></div>
+                        <button class="btn-add" onclick="openAddSoul('purgatorio')">+ Aggiungi al Purgatorio</button>
+                    </div>
+                    <div class="realm-card realm-paradiso">
+                        <div class="realm-header">
+                            <span>✨ Paradiso</span>
+                            <span class="realm-count" id="paradisoCount">0 anime</span>
+                        </div>
+                        <div class="realm-body" id="paradisoList"></div>
+                        <button class="btn-add" onclick="openAddSoul('paradiso')">+ Aggiungi al Paradiso</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div id="search" class="content-section">
+                <div class="page-header">
+                    <div class="page-title">🔍 Cerca Anime nel Database</div>
+                </div>
+                <div style="background:#fff; border:1px solid #d3d3d3; padding:20px; border-radius:3px;">
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <input type="text" class="form-input" id="searchInput" placeholder="Cerca per nome..." style="flex:1;">
+                        <select class="form-select" id="searchCategory" style="width:200px;">
+                            <option value="">Tutte le categorie</option>
+                            <option value="historical">Personaggi Storici</option>
+                            <option value="celebrity">Celebrità</option>
+                            <option value="fictional">Personaggi di Finzione</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchSouls()">Cerca</button>
+                    </div>
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Section -->
+            <div id="leaderboard" class="content-section">
+                <div class="page-header">
+                    <div class="page-title"> Classifiche</div>
+                </div>
+                <div style="background:#fff; border:1px solid #d3d3d3; padding:20px; border-radius:3px;">
+                    <h3 style="color:#e65100; margin-bottom:15px;">Top Giudici</h3>
+                    <div id="leaderboardList"></div>
+                </div>
+            </div>
+
+            <!-- Tickets Section -->
+            <div id="tickets" class="content-section">
+                <div class="page-header">
+                    <div class="page-title">🎫 I Miei Ticket</div>
+                    <button class="btn btn-primary" onclick="window.location.href='tickets/ticket-create.html'">+ Nuovo Ticket</button>
+                </div>
+                <div style="background:#fff; border:1px solid #d3d3d3; border-radius:3px; overflow:hidden;">
+                    <div id="ticketsList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Aggiungi Anima -->
+    <div id="addSoulModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Aggiungi Anima al Tuo Aldilà</h3>
+                <button class="close-btn" onclick="closeModal('addSoulModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addSoulForm">
+                    <div class="form-group">
+                        <label class="form-label">Cerca Anima *</label>
+                        <input type="text" class="form-input" id="soulSearch" placeholder="Inizia a digitare..." oninput="searchSoulForAdd()">
+                        <div id="soulSearchResults" style="max-height:150px; overflow-y:auto; border:1px solid #d3d3d3; margin-top:5px; display:none;"></div>
+                        <input type="hidden" id="selectedSoulId">
+                        <input type="hidden" id="selectedSoulName">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Regno *</label>
+                        <select class="form-select" id="realmType" required>
+                            <option value="inferno">🔥 Inferno</option>
+                            <option value="purgatorio">️ Purgatorio</option>
+                            <option value="paradiso">✨ Paradiso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Motivazione * (min. 50 caratteri)</label>
+                        <textarea class="form-textarea" id="motivation" required minlength="50" maxlength="5000"></textarea>
+                        <div style="font-size:11px; color:#666; margin-top:3px;"><span id="charCount">0</span>/5000</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pena/Beatitudine (opzionale)</label>
+                        <textarea class="form-textarea" id="punishment" maxlength="2000"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cerchio/Sfera (opzionale)</label>
+                        <input type="text" class="form-input" id="circleName" placeholder="es. Cerchio dei Traditori">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">✅ Conferma Sentenza</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026 - "Io non giudico. Io fornisco solo la struttura."</div>
+
+    <script>
+        let currentRealm = 'inferno';
+        let userSouls = { inferno: [], purgatorio: [], paradiso: [] };
+
+        // Check auth
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token) { window.location.href = 'login.html'; }
+        else {
+            document.getElementById('userName').textContent = user.username || 'Utente';
+            document.getElementById('userAvatar').textContent = (user.username || 'U')[0].toUpperCase();
+            document.getElementById('userLevel').textContent = user.level || 1;
+            document.getElementById('userKarma').textContent = user.karma || 0;
+        }
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelectorAll('.menu-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (sectionId === 'search') searchSouls();
+            if (sectionId === 'leaderboard') loadLeaderboard();
+            if (sectionId === 'tickets') loadTickets();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function openAddSoul(realm) {
+            currentRealm = realm;
+            document.getElementById('realmType').value = realm;
+            openModal('addSoulModal');
+        }
+
+        document.getElementById('motivation').addEventListener('input', (e) => {
+            document.getElementById('charCount').textContent = e.target.value.length;
+        });
+
+        async function searchSoulForAdd() {
+            const query = document.getElementById('soulSearch').value;
+            if (query.length < 2) { document.getElementById('soulSearchResults').style.display = 'none'; return; }
+            
+            try {
+                const response = await fetch(`/api/v1/souls?search=${encodeURIComponent(query)}&status=approved`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const results = document.getElementById('soulSearchResults');
+                results.innerHTML = '';
+                data.souls.forEach(soul => {
+                    const div = document.createElement('div');
+                    div.style.cssText = 'padding:8px; cursor:pointer; border-bottom:1px solid #eee;';
+                    div.innerHTML = `<strong>${soul.name}</strong><br><small style="color:#666;">${soul.category} - ${soul.epoch || ''}</small>`;
+                    div.onclick = () => {
+                        document.getElementById('selectedSoulId').value = soul.id;
+                        document.getElementById('selectedSoulName').value = soul.name;
+                        document.getElementById('soulSearch').value = soul.name;
+                        results.style.display = 'none';
+                    };
+                    results.appendChild(div);
+                });
+                results.style.display = data.souls.length ? 'block' : 'none';
+            } catch (error) { console.error(error); }
+        }
+
+        document.getElementById('addSoulForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const soul_id = document.getElementById('selectedSoulId').value;
+            const realmType = document.getElementById('realmType').value;
+            const motivation = document.getElementById('motivation').value;
+            const punishment = document.getElementById('punishment').value;
+            const circleName = document.getElementById('circleName').value;
+
+            if (!soul_id) { alert('Seleziona un\'anima'); return; }
+
+            try {
+                const response = await fetch('/api/v1/user-souls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ soul_id, realm_id: realmType, motivation, punishment, circle_name: circleName })
+                });
+                
+                if (response.ok) {
+                    alert('Anima aggiunta al tuo aldilà!');
+                    closeModal('addSoulModal');
+                    document.getElementById('addSoulForm').reset();
+                    loadUserSouls();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Errore');
+                }
+            } catch (error) { alert('Errore di connessione'); }
+        });
+
+        async function loadUserSouls() {
+            try {
+                const response = await fetch('/api/v1/user-souls', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                userSouls = { inferno: [], purgatorio: [], paradiso: [] };
+                data.userSouls.forEach(us => {
+                    if (us.realm && userSouls[us.realm.realm_type]) {
+                        userSouls[us.realm.realm_type].push(us);
+                    }
+                });
+
+                ['inferno', 'purgatorio', 'paradiso'].forEach(realm => {
+                    const list = document.getElementById(`${realm}List`);
+                    const count = document.getElementById(`${realm}Count`);
+                    list.innerHTML = '';
+                    count.textContent = `${userSouls[realm].length} anime`;
+                    
+                    userSouls[realm].slice(0, 5).forEach(us => {
+                        const div = document.createElement('div');
+                        div.className = 'soul-item';
+                        div.innerHTML = `
+                            <div>
+                                <div class="soul-name">${us.soul?.name || 'Anima'}</div>
+                                <div class="soul-reason">${us.motivation.substring(0, 80)}...</div>
+                            </div>
+                            <div class="soul-actions">
+                                <button class="btn-small" onclick="editSoul('${us.id}')">Modifica</button>
+                                <button class="btn-small" onclick="removeSoul('${us.id}')">Rimuovi</button>
+                            </div>
+                        `;
+                        list.appendChild(div);
+                    });
+                });
+
+                const total = Object.values(userSouls).reduce((sum, arr) => sum + arr.length, 0);
+                document.getElementById('totalSouls').textContent = total;
+            } catch (error) { console.error(error); }
+        }
+
+        async function removeSoul(id) {
+            if (!confirm('Rimuovere questa anima dal tuo aldilà?')) return;
+            try {
+                await fetch(`/api/v1/user-souls/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                loadUserSouls();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function searchSouls() {
+            const query = document.getElementById('searchInput').value;
+            const category = document.getElementById('searchCategory').value;
+            const results = document.getElementById('searchResults');
+            
+            try {
+                const params = new URLSearchParams({ search: query, status: 'approved' });
+                if (category) params.append('category', category);
+                
+                const response = await fetch(`/api/v1/souls?${params}`);
+                const data = await response.json();
+                
+                results.innerHTML = `<table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f5f5f5;">
+                        <th style="padding:10px; border:1px solid #ddd; text-align:left;">Nome</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Categoria</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Epoca</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Giudizi</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Azione</th>
+                    </tr></thead>
+                    <tbody>${data.souls.map(s => `
+                        <tr>
+                            <td style="padding:10px; border:1px solid #ddd;"><a href="soul-detail.html?id=${s.id}" style="color:#0000ff;">${s.name}</a></td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${s.category}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${s.epoch || '-'}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${s.total_judgments}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;"><button class="btn btn-primary" onclick="openAddSoulWithSoul('${s.id}', '${s.name.replace(/'/g, "\\'")}')">Giudica</button></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>`;
+            } catch (error) { results.innerHTML = '<p>Errore di caricamento</p>'; }
+        }
+
+        function openAddSoulWithSoul(soulId, soulName) {
+            document.getElementById('selectedSoulId').value = soulId;
+            document.getElementById('selectedSoulName').value = soulName;
+            document.getElementById('soulSearch').value = soulName;
+            openModal('addSoulModal');
+        }
+
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('/api/v1/leaderboard/judges');
+                const data = await response.json();
+                const list = document.getElementById('leaderboardList');
+                list.innerHTML = `<table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f5f5f5;">
+                        <th style="padding:10px; border:1px solid #ddd;">#</th>
+                        <th style="padding:10px; border:1px solid #ddd; text-align:left;">Utente</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Livello</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Karma</th>
+                    </tr></thead>
+                    <tbody>${data.leaderboard.map((u, i) => `
+                        <tr>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center; font-weight:bold;">${i+1}</td>
+                            <td style="padding:10px; border:1px solid #ddd;">${u.username}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${u.level}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${u.karma}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>`;
+            } catch (error) { console.error(error); }
+        }
+
+        async function loadTickets() {
+            try {
+                const response = await fetch('/api/v1/tickets/my', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const list = document.getElementById('ticketsList');
+                
+                if (data.tickets.length === 0) {
+                    list.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">Nessun ticket. <a href="tickets/ticket-create.html" style="color:#0000ff;">Crea il primo!</a></div>';
+                    return;
+                }
+                
+                list.innerHTML = `<table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f5f5f5;">
+                        <th style="padding:10px; border:1px solid #ddd;">#</th>
+                        <th style="padding:10px; border:1px solid #ddd; text-align:left;">Oggetto</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Stato</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Data</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Azione</th>
+                    </tr></thead>
+                    <tbody>${data.tickets.map(t => `
+                        <tr>
+                            <td style="padding:10px; border:1px solid #ddd;">#${t.ticket_number}</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><a href="tickets/ticket-detail.html?id=${t.id}" style="color:#0000ff;">${t.subject}</a></td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${t.status}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${new Date(t.created_at).toLocaleDateString()}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;"><a href="tickets/ticket-detail.html?id=${t.id}" class="btn btn-primary" style="text-decoration:none; padding:4px 8px; font-size:11px;">Vedi</a></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>`;
+            } catch (error) { console.error(error); }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+
+        loadUserSouls();
+    </script>
+</body>
+</html>

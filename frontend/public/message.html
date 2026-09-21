@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Messaggi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+        
+        .conversations { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; overflow: hidden; max-height: 600px; overflow-y: auto; }
+        .conversation-item { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+        .conversation-item:hover { background: #fff3e0; }
+        .conversation-item.active { background: #ffe0b2; }
+        .conv-avatar { width: 40px; height: 40px; border-radius: 50%; background: #f57c00; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .conv-info { flex: 1; }
+        .conv-name { font-weight: bold; color: #333; }
+        .conv-preview { font-size: 11px; color: #666; margin-top: 3px; }
+        .conv-time { font-size: 10px; color: #999; }
+        
+        .chat { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; display: flex; flex-direction: column; height: 600px; }
+        .chat-header { padding: 15px; background: #f5f5f5; border-bottom: 1px solid #d3d3d3; font-weight: bold; color: #e65100; }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; background: #fafafa; }
+        .message { margin-bottom: 15px; display: flex; }
+        .message.sent { justify-content: flex-end; }
+        .message-bubble { max-width: 70%; padding: 10px 15px; border-radius: 15px; }
+        .message.received .message-bubble { background: #fff; border: 1px solid #d3d3d3; }
+        .message.sent .message-bubble { background: #f57c00; color: #fff; }
+        .message-time { font-size: 10px; color: #999; margin-top: 3px; }
+        .message.sent .message-time { text-align: right; color: rgba(255,255,255,0.7); }
+        
+        .chat-input { padding: 15px; border-top: 1px solid #d3d3d3; display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 10px; border: 1px solid #999; border-radius: 20px; font-size: 13px; font-family: Arial, sans-serif; }
+        .chat-input input:focus { outline: none; border-color: #f57c00; }
+        .chat-input button { padding: 10px 20px; background: #f57c00; color: #fff; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .chat-input button:hover { background: #e65100; }
+        
+        .empty-chat { flex: 1; display: flex; align-items: center; justify-content: center; color: #999; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="notifications.html">Notifiche</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="conversations" id="conversationsList">
+            <div style="padding:20px; text-align:center; color:#666;">Caricamento...</div>
+        </div>
+        <div class="chat" id="chatArea">
+            <div class="empty-chat">Seleziona una conversazione</div>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        if (!token) window.location.href = 'login.html';
+
+        let currentConversation = null;
+
+        async function loadConversations() {
+            try {
+                const response = await fetch('/api/v1/messages/conversations', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const list = document.getElementById('conversationsList');
+                
+                if (data.conversations.length === 0) {
+                    list.innerHTML = '<div style="padding:20px; text-align:center; color:#666;">Nessun messaggio</div>';
+                    return;
+                }
+
+                list.innerHTML = data.conversations.map(c => {
+                    const other = c.sender_id === JSON.parse(localStorage.getItem('user')).id ? c.receiver : c.sender;
+                    return `
+                        <div class="conversation-item" onclick="openConversation('${other.id}', '${other.username}')">
+                            <div class="conv-avatar">${other.username[0].toUpperCase()}</div>
+                            <div class="conv-info">
+                                <div class="conv-name">${other.username}</div>
+                                <div class="conv-preview">${c.content.substring(0, 40)}...</div>
+                            </div>
+                            <div class="conv-time">${new Date(c.created_at).toLocaleDateString()}</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        async function openConversation(userId, username) {
+            currentConversation = userId;
+            document.getElementById('chatArea').innerHTML = `
+                <div class="chat-header">${username}</div>
+                <div class="chat-messages" id="chatMessages">Caricamento...</div>
+                <div class="chat-input">
+                    <input type="text" id="messageInput" placeholder="Scrivi un messaggio..." onkeypress="if(event.key==='Enter')sendMessage()">
+                    <button onclick="sendMessage()">Invia</button>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`/api/v1/messages/conversation/${userId}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const myId = JSON.parse(localStorage.getItem('user')).id;
+                
+                document.getElementById('chatMessages').innerHTML = data.messages.map(m => `
+                    <div class="message ${m.sender_id === myId ? 'sent' : 'received'}">
+                        <div>
+                            <div class="message-bubble">${m.content}</div>
+                            <div class="message-time">${new Date(m.created_at).toLocaleTimeString()}</div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            if (!content || !currentConversation) return;
+
+            try {
+                await fetch('/api/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ receiver_id: currentConversation, content })
+                });
+                input.value = '';
+                openConversation(currentConversation, document.querySelector('.chat-header').textContent);
+            } catch (error) { alert('Errore'); }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        loadConversations();
+    </script>
+</body>
+</html>

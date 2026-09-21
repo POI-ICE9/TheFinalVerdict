@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Impostazioni</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        
+        .section { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; margin-bottom: 20px; }
+        .section h3 { color: #e65100; margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #f57c00; padding-bottom: 8px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 12px; }
+        .form-input, .form-select { width: 100%; padding: 8px 12px; border: 1px solid #999; border-radius: 3px; font-size: 13px; font-family: Arial, sans-serif; }
+        .form-input:focus, .form-select:focus { outline: none; border-color: #f57c00; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .checkbox-group input { width: auto; }
+        
+        .btn { padding: 8px 16px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 12px; border-radius: 2px; }
+        .btn:hover { background: #d0d0d0; }
+        .btn-primary { background: #f57c00; color: #fff; border-color: #e65100; }
+        .btn-primary:hover { background: #e65100; }
+        .btn-danger { background: #f44336; color: #fff; border-color: #da190b; }
+        
+        .alert { padding: 10px; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+        .alert-success { background: #d4edda; border: 1px solid #4caf50; color: #155724; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="profile.html">Profilo</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h3>🔔 Notifiche</h3>
+            <div id="alertBox1"></div>
+            <div class="checkbox-group"><input type="checkbox" id="notifEmail" checked><label for="notifEmail">Notifiche via email</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="notifPush" checked><label for="notifPush">Notifiche push</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="notifComments" checked><label for="notifComments">Nuovi commenti</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="notifVisits" checked><label for="notifVisits">Nuove visite</label></div>
+            <button class="btn btn-primary" onclick="saveSettings('alertBox1', {notifications:true})">💾 Salva</button>
+        </div>
+
+        <div class="section">
+            <h3>🔒 Privacy</h3>
+            <div id="alertBox2"></div>
+            <div class="form-group">
+                <label class="form-label">Visibilità Profilo</label>
+                <select class="form-select" id="profileVisibility">
+                    <option value="public">Pubblico</option>
+                    <option value="friends">Solo Amici</option>
+                    <option value="private">Privato</option>
+                </select>
+            </div>
+            <div class="checkbox-group"><input type="checkbox" id="allowComments" checked><label for="allowComments">Permetti commenti sul mio aldilà</label></div>
+            <div class="checkbox-group"><input type="checkbox" id="allowMessages" checked><label for="allowMessages">Permetti messaggi privati</label></div>
+            <button class="btn btn-primary" onclick="saveSettings('alertBox2', {privacy:true})">💾 Salva</button>
+        </div>
+
+        <div class="section">
+            <h3>🔐 Sicurezza</h3>
+            <div id="alertBox3"></div>
+            <div class="form-group">
+                <label class="form-label">Cambia Password</label>
+                <input type="password" class="form-input" id="oldPassword" placeholder="Password attuale" style="margin-bottom:10px;">
+                <input type="password" class="form-input" id="newPassword" placeholder="Nuova password" style="margin-bottom:10px;">
+                <input type="password" class="form-input" id="confirmPassword" placeholder="Conferma nuova password">
+            </div>
+            <div class="checkbox-group"><input type="checkbox" id="twoFactor"><label for="twoFactor">Autenticazione a due fattori (2FA)</label></div>
+            <button class="btn btn-primary" onclick="changePassword()"> Cambia Password</button>
+        </div>
+
+        <div class="section">
+            <h3>📥 Esporta Dati (GDPR)</h3>
+            <p style="margin-bottom:15px; color:#666;">Scarica tutti i tuoi dati personali in formato JSON.</p>
+            <button class="btn btn-primary" onclick="exportData()">📥 Esporta i Miei Dati</button>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        if (!token) window.location.href = 'login.html';
+
+        function saveSettings(alertId, data) {
+            document.getElementById(alertId).innerHTML = '<div class="alert alert-success">Impostazioni salvate!</div>';
+            setTimeout(() => document.getElementById(alertId).innerHTML = '', 3000);
+        }
+
+        async function changePassword() {
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const alertBox = document.getElementById('alertBox3');
+
+            if (newPassword !== confirmPassword) {
+                alertBox.innerHTML = '<div class="alert alert-error">Le password non coincidono</div>';
+                return;
+            }
+            if (newPassword.length < 8) {
+                alertBox.innerHTML = '<div class="alert alert-error">La password deve avere almeno 8 caratteri</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/v1/auth/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ oldPassword, newPassword })
+                });
+                if (response.ok) {
+                    alertBox.innerHTML = '<div class="alert alert-success">Password cambiata con successo!</div>';
+                    document.getElementById('oldPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    const data = await response.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                }
+            } catch (error) { alertBox.innerHTML = '<div class="alert alert-error">Errore</div>'; }
+        }
+
+        async function exportData() {
+            try {
+                const response = await fetch('/api/v1/users/export-data', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'thefinalverdict-data.json';
+                a.click();
+            } catch (error) { alert('Errore'); }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Profilo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; background: #f5f5f5; }
+        
+        .header { background: linear-gradient(to bottom, #ffa726 0%, #fb8c00 100%); border-bottom: 3px solid #f57c00; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo-icon { width: 30px; height: 30px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .header-right a { color: #fff; text-decoration: none; padding: 4px 12px; background: rgba(255,255,255,0.2); border-radius: 3px; margin-left: 10px; font-size: 12px; }
+        
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        
+        .profile-card { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; overflow: hidden; margin-bottom: 20px; }
+        .profile-header { background: linear-gradient(to right, #ffa726, #fb8c00); padding: 30px; color: #fff; display: flex; align-items: center; gap: 20px; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: #fff; color: #e65100; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; border: 3px solid #fff; }
+        .profile-info h2 { font-size: 24px; margin-bottom: 5px; }
+        .profile-info p { opacity: 0.9; font-size: 13px; }
+        .profile-body { padding: 20px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-box { background: #f5f5f5; border: 1px solid #d3d3d3; padding: 15px; text-align: center; border-radius: 3px; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #e65100; }
+        .stat-label { font-size: 11px; color: #666; text-transform: uppercase; margin-top: 5px; }
+        
+        .section { background: #fff; border: 1px solid #d3d3d3; border-radius: 3px; padding: 20px; margin-bottom: 20px; }
+        .section h3 { color: #e65100; margin-bottom: 15px; font-size: 16px; border-bottom: 2px solid #f57c00; padding-bottom: 8px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 12px; }
+        .form-input, .form-textarea { width: 100%; padding: 8px 12px; border: 1px solid #999; border-radius: 3px; font-size: 13px; font-family: Arial, sans-serif; }
+        .form-textarea { min-height: 80px; resize: vertical; }
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: #f57c00; }
+        
+        .btn { padding: 8px 16px; border: 1px solid #999; background: #e0e0e0; cursor: pointer; font-size: 12px; border-radius: 2px; }
+        .btn:hover { background: #d0d0d0; }
+        .btn-primary { background: #f57c00; color: #fff; border-color: #e65100; }
+        .btn-primary:hover { background: #e65100; }
+        .btn-danger { background: #f44336; color: #fff; border-color: #da190b; }
+        
+        .alert { padding: 10px; border-radius: 3px; margin-bottom: 15px; font-size: 12px; }
+        .alert-success { background: #d4edda; border: 1px solid #4caf50; color: #155724; }
+        .alert-error { background: #f8d7da; border: 1px solid #f44336; color: #721c24; }
+        
+        .footer { background: #4682b4; color: #fff; padding: 10px; text-align: center; font-size: 11px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="logo">
+            <div class="logo-icon">⚖️</div>
+            <span>TheFinalVerdict</span>
+        </a>
+        <div class="header-right">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="settings.html">Impostazioni</a>
+            <a href="#" onclick="logout()">Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <div class="profile-info">
+                    <h2 id="profileUsername">Utente</h2>
+                    <p id="profileEmail">email@example.com</p>
+                    <p id="profileQuote" style="margin-top:10px; font-style:italic;">"Nessuna citazione impostata"</p>
+                </div>
+            </div>
+            <div class="profile-body">
+                <div class="stats-grid">
+                    <div class="stat-box"><div class="stat-value" id="statSouls">0</div><div class="stat-label">Anime Giudicate</div></div>
+                    <div class="stat-box"><div class="stat-value" id="statLevel">1</div><div class="stat-label">Livello</div></div>
+                    <div class="stat-box"><div class="stat-value" id="statKarma">0</div><div class="stat-label">Karma</div></div>
+                    <div class="stat-box"><div class="stat-value" id="statVisits">0</div><div class="stat-label">Visite</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Modifica Profilo</h3>
+            <div id="alertBox"></div>
+            <form id="profileForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-textarea" id="bio" maxlength="1000"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Citazione Preferita</label>
+                    <input type="text" class="form-input" id="quote" maxlength="255">
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Salva Modifiche</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <h3>Statistiche Dettagliate</h3>
+            <div id="detailedStats">Caricamento...</div>
+        </div>
+
+        <div class="section" style="border-color:#f44336;">
+            <h3 style="color:#f44336; border-color:#f44336;">Zona Pericolosa</h3>
+            <p style="margin-bottom:15px; color:#666;">L'eliminazione dell'account è permanente e irreversibile.</p>
+            <button class="btn btn-danger" onclick="deleteAccount()">🗑️ Elimina Account</button>
+        </div>
+    </div>
+
+    <div class="footer">TheFinalVerdict © 2026</div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token) window.location.href = 'login.html';
+
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/v1/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const u = data.user;
+                
+                document.getElementById('profileUsername').textContent = u.username;
+                document.getElementById('profileEmail').textContent = u.email;
+                document.getElementById('profileAvatar').textContent = u.username[0].toUpperCase();
+                document.getElementById('profileQuote').textContent = u.quote || '"Nessuna citazione impostata"';
+                document.getElementById('username').value = u.username;
+                document.getElementById('bio').value = u.bio || '';
+                document.getElementById('quote').value = u.quote || '';
+                document.getElementById('statLevel').textContent = u.level;
+                document.getElementById('statKarma').textContent = u.karma;
+            } catch (error) { console.error(error); }
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alertBox = document.getElementById('alertBox');
+            try {
+                const response = await fetch(`/api/v1/users/${user.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        bio: document.getElementById('bio').value,
+                        quote: document.getElementById('quote').value
+                    })
+                });
+                if (response.ok) {
+                    alertBox.innerHTML = '<div class="alert alert-success">Profilo aggiornato!</div>';
+                    loadProfile();
+                } else {
+                    const data = await response.json();
+                    alertBox.innerHTML = `<div class="alert alert-error">${data.error}</div>`;
+                }
+            } catch (error) { alertBox.innerHTML = '<div class="alert alert-error">Errore</div>'; }
+        });
+
+        async function deleteAccount() {
+            if (!confirm('Sei SICURO di voler eliminare il tuo account? Questa azione è IRREVERSIBILE.')) return;
+            if (!confirm('Conferma definitiva: tutti i tuoi dati verranno persi per sempre.')) return;
+            try {
+                await fetch(`/api/v1/users/${user.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                localStorage.clear();
+                window.location.href = 'index.html';
+            } catch (error) { alert('Errore'); }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>
