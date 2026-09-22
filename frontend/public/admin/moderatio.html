@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Moderazione</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab active">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"> Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li class="active"><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Moderazione Contenuti</div>
+                <div class="section-actions">
+                    <button class="btn" onclick="location.reload()">🔄 ricarica</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab(this, 'pending-reports')">Segnalazioni Pendenti (<span id="countReports">0</span>)</button>
+                <button class="tab" onclick="showTab(this, 'custom-souls')">Anime Custom in Attesa (<span id="countSouls">0</span>)</button>
+                <button class="tab" onclick="showTab(this, 'moderation-log')">Log Moderazione</button>
+            </div>
+
+            <!-- Segnalazioni Pendenti -->
+            <div id="pending-reports" class="tab-content active">
+                <div class="filters-bar">
+                    <div class="filter-group">
+                        <label class="filter-label">Tipo:</label>
+                        <select class="filter-select" id="filterReportType">
+                            <option value="">Tutti</option>
+                            <option value="comment">Commento</option>
+                            <option value="user">Utente</option>
+                            <option value="soul">Anima</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Priorità:</label>
+                        <select class="filter-select" id="filterReportPriority">
+                            <option value="">Tutte</option>
+                            <option value="high">Alta</option>
+                            <option value="medium">Media</option>
+                            <option value="low">Bassa</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">&nbsp;</label>
+                        <button class="btn btn-primary" onclick="loadReports()">cerca</button>
+                    </div>
+                </div>
+
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">Segnalazioni da Moderare</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tipo</th>
+                                    <th>Segnalato da</th>
+                                    <th>Segnalato</th>
+                                    <th>Motivo</th>
+                                    <th>Priorità</th>
+                                    <th>Data</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <tr><td colspan="8" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anime Custom -->
+            <div id="custom-souls" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">Anime Custom in Attesa di Approvazione</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Proposto da</th>
+                                    <th>Categoria</th>
+                                    <th>Motivazione</th>
+                                    <th>Data</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customSoulsTableBody">
+                                <tr><td colspan="7" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Log Moderazione -->
+            <div id="moderation-log" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">Storico Azioni di Moderazione</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data/Ora</th>
+                                    <th>Moderatore</th>
+                                    <th>Azione</th>
+                                    <th>Target</th>
+                                    <th>Dettagli</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modLogTableBody">
+                                <tr><td colspan="5" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder', 'super_moderator', 'moderator'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        function showTab(tabElement, contentId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tabElement.classList.add('active');
+            document.getElementById(contentId).classList.add('active');
+        }
+
+        async function loadReports() {
+            const type = document.getElementById('filterReportType').value;
+            const priority = document.getElementById('filterReportPriority').value;
+            const params = new URLSearchParams();
+            if (type) params.append('report_type', type);
+            if (priority) params.append('priority', priority);
+
+            try {
+                const response = await fetch(`/api/v1/moderation/reports?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                document.getElementById('countReports').textContent = data.pagination?.total || 0;
+
+                const tbody = document.getElementById('reportsTableBody');
+                if (!data.reports || data.reports.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">Nessuna segnalazione</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.reports.map(r => `
+                    <tr>
+                        <td>#${r.id.substring(0,8)}</td>
+                        <td>${r.report_type}</td>
+                        <td>${r.reporter?.username || 'N/A'}</td>
+                        <td>${r.reportedUser?.username || 'N/A'}</td>
+                        <td title="${r.reason}">${r.reason.substring(0, 50)}${r.reason.length > 50 ? '...' : ''}</td>
+                        <td><span class="status-badge status-${r.priority === 'high' ? 'banned' : r.priority === 'medium' ? 'suspended' : 'active'}">${r.priority}</span></td>
+                        <td>${new Date(r.created_at).toLocaleString()}</td>
+                        <td>
+                            <a class="table-link" href="#" onclick="resolveReport('${r.id}', 'resolved')">Risolvi</a>
+                            <a class="table-link" href="#" onclick="resolveReport('${r.id}', 'dismissed')">Ignora</a>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        async function resolveReport(id, status) {
+            const notes = prompt('Note di risoluzione (opzionale):') || '';
+            try {
+                await fetch(`/api/v1/moderation/reports/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status, resolution_notes: notes })
+                });
+                alert('✅ Segnalazione gestita');
+                loadReports();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function loadCustomSouls() {
+            try {
+                const response = await fetch('/api/v1/moderation/custom-souls/pending', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                document.getElementById('countSouls').textContent = data.souls?.length || 0;
+
+                const tbody = document.getElementById('customSoulsTableBody');
+                if (!data.souls || data.souls.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:20px;">Nessuna anima in attesa</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.souls.map(s => `
+                    <tr>
+                        <td>#${s.id.substring(0,8)}</td>
+                        <td><a class="table-link" href="../soul-detail.html?id=${s.id}">${s.name}</a></td>
+                        <td>${s.created_by_user?.username || 'N/A'}</td>
+                        <td>${s.category}</td>
+                        <td>${(s.biography || '').substring(0, 50)}...</td>
+                        <td>${new Date(s.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <a class="table-link" href="#" onclick="approveSoul('${s.id}')">Approva</a>
+                            <a class="table-link" href="#" onclick="rejectSoul('${s.id}')">Rifiuta</a>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        async function approveSoul(id) {
+            if (!confirm('Approvare questa anima?')) return;
+            await fetch(`/api/v1/souls/${id}/approve`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+            loadCustomSouls();
+        }
+
+        async function rejectSoul(id) {
+            const reason = prompt('Motivo del rifiuto:');
+            if (!reason) return;
+            await fetch(`/api/v1/souls/${id}/reject`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ reason })
+            });
+            loadCustomSouls();
+        }
+
+        async function loadModLog() {
+            try {
+                const response = await fetch('/api/v1/admin/staff-logs?action=MODERATION', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const tbody = document.getElementById('modLogTableBody');
+                
+                if (!data.logs || data.logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Nessun log</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.logs.map(l => `
+                    <tr>
+                        <td>${new Date(l.created_at).toLocaleString()}</td>
+                        <td>${l.staff?.username || 'N/A'}</td>
+                        <td>${l.action}</td>
+                        <td>${l.target_type || '-'}: ${(l.target_id || '').substring(0,8)}</td>
+                        <td>${JSON.stringify(l.details || {}).substring(0, 50)}</td>
+                    </tr>
+                `).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadReports();
+        loadCustomSouls();
+        loadModLog();
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Log Attività</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li class="active"><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html"> Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Log Attività Staff (Audit Trail)</div>
+                <div class="section-actions">
+                    <button class="btn btn-success" onclick="exportLogs()">📥 Esporta Log</button>
+                    <button class="btn" onclick="location.reload()">🔄 ricarica</button>
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                ℹ️ Tutti i log sono immutabili e tracciati per compliance. I log vengono conservati per 12 mesi.
+            </div>
+
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Staff:</label>
+                    <select class="filter-select" id="filterStaff">
+                        <option value="">Tutti</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Azione:</label>
+                    <select class="filter-select" id="filterAction">
+                        <option value="">Tutte</option>
+                        <option value="USER_BAN">Ban Utente</option>
+                        <option value="USER_SUSPEND">Sospensione</option>
+                        <option value="ROLE_CHANGE">Cambio Ruolo</option>
+                        <option value="CONTENT_DELETE">Eliminazione Contenuto</option>
+                        <option value="SOUL_APPROVE">Approvazione Anima</option>
+                        <option value="SOUL_REJECT">Rifiuto Anima</option>
+                        <option value="TICKET_UPDATE">Aggiornamento Ticket</option>
+                        <option value="SETTINGS_CHANGE">Modifica Impostazioni</option>
+                        <option value="ANNOUNCEMENT_CREATE">Creazione Annuncio</option>
+                        <option value="BLACKLIST_ADD">Aggiunta Blacklist</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Data Da:</label>
+                    <input type="date" class="filter-input" id="filterDateFrom">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Data A:</label>
+                    <input type="date" class="filter-input" id="filterDateTo">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn btn-primary" onclick="loadLogs()">cerca</button>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn" onclick="resetFilters()">pulisci</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-title">Log Attività (<span id="totalLogs">0</span> totali)</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data/Ora</th>
+                                <th>Staff</th>
+                                <th>Ruolo</th>
+                                <th>Azione</th>
+                                <th>Target Type</th>
+                                <th>Target ID</th>
+                                <th>Dettagli</th>
+                                <th>IP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody">
+                            <tr><td colspan="8" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-total">totale: <span id="totalLogsFooter">0</span></div>
+                    <div class="table-pagination">
+                        <span>num.righe:</span>
+                        <select class="pagination-select" id="rowsPerPage" onchange="loadLogs()">
+                            <option>25</option><option selected>50</option><option>100</option><option>500</option>
+                        </select>
+                        <button class="page-btn" onclick="changePage(-1)">«</button>
+                        <button class="page-btn active" id="currentPage">1</button>
+                        <button class="page-btn" onclick="changePage(1)">»</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container" style="margin-top:20px;">
+                <h3 style="color:#e65100; margin-bottom:15px; font-size:14px;">📊 Statistiche Staff</h3>
+                <div id="staffStats"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder'].includes(user.role)) {
+            alert('Accesso negato. Solo admin.');
+            window.location.href = '../login.html';
+        }
+
+        let currentPage = 1;
+        let allStaff = [];
+
+        async function loadStaffForFilter() {
+            try {
+                const response = await fetch('/api/v1/staff', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                allStaff = data.staff || [];
+                const select = document.getElementById('filterStaff');
+                allStaff.forEach(s => {
+                    const option = document.createElement('option');
+                    option.value = s.id;
+                    option.textContent = s.username + ' (' + s.role + ')';
+                    select.appendChild(option);
+                });
+            } catch (error) { console.error(error); }
+        }
+
+        async function loadLogs() {
+            const staffId = document.getElementById('filterStaff').value;
+            const action = document.getElementById('filterAction').value;
+            const dateFrom = document.getElementById('filterDateFrom').value;
+            const dateTo = document.getElementById('filterDateTo').value;
+            const limit = document.getElementById('rowsPerPage').value;
+
+            const params = new URLSearchParams({ page: currentPage, limit });
+            if (staffId) params.append('staff_id', staffId);
+            if (action) params.append('action', action);
+
+            try {
+                const response = await fetch(`/api/v1/admin/staff-logs?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                document.getElementById('totalLogs').textContent = data.pagination?.total || 0;
+                document.getElementById('totalLogsFooter').textContent = data.pagination?.total || 0;
+                document.getElementById('currentPage').textContent = currentPage;
+
+                const tbody = document.getElementById('logsTableBody');
+                if (!data.logs || data.logs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">Nessun log trovato</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.logs.map(l => `
+                    <tr>
+                        <td>${new Date(l.created_at).toLocaleString()}</td>
+                        <td><strong>${l.staff?.username || 'N/A'}</strong></td>
+                        <td><span class="status-badge" style="background:#2196f3; color:white;">${l.staff?.role || '-'}</span></td>
+                        <td><code style="background:#f5f5f5; padding:2px 6px; border-radius:3px;">${l.action}</code></td>
+                        <td>${l.target_type || '-'}</td>
+                        <td>${l.target_id ? l.target_id.substring(0,8) : '-'}</td>
+                        <td title='${JSON.stringify(l.details || {})}'>${JSON.stringify(l.details || {}).substring(0, 50)}${JSON.stringify(l.details || {}).length > 50 ? '...' : ''}</td>
+                        <td><code>${l.ip_address || '-'}</code></td>
+                    </tr>
+                `).join('');
+
+                loadStaffStats();
+            } catch (error) { console.error(error); }
+        }
+
+        async function loadStaffStats() {
+            try {
+                const response = await fetch('/api/v1/staff/stats', { headers: { 'Authorization': `Bearer ${token}` } });
+                const data = await response.json();
+                const container = document.getElementById('staffStats');
+                
+                if (!data.staff || data.staff.length === 0) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center;">Nessun dato</div>';
+                    return;
+                }
+
+                container.innerHTML = `<table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f5f5f5;">
+                        <th style="padding:10px; border:1px solid #ddd;">Staff</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Ruolo</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Azioni Totali</th>
+                        <th style="padding:10px; border:1px solid #ddd;">Ultimo Accesso</th>
+                    </tr></thead>
+                    <tbody>${data.staff.map(s => `
+                        <tr>
+                            <td style="padding:10px; border:1px solid #ddd;"><strong>${s.username}</strong></td>
+                            <td style="padding:10px; border:1px solid #ddd;">${s.role}</td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;"><strong>${s.actionsCount || 0}</strong></td>
+                            <td style="padding:10px; border:1px solid #ddd; text-align:center;">${s.last_login ? new Date(s.last_login).toLocaleString() : 'Mai'}</td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>`;
+            } catch (error) { console.error(error); }
+        }
+
+        function changePage(delta) {
+            currentPage = Math.max(1, currentPage + delta);
+            loadLogs();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterStaff').value = '';
+            document.getElementById('filterAction').value = '';
+            document.getElementById('filterDateFrom').value = '';
+            document.getElementById('filterDateTo').value = '';
+            currentPage = 1;
+            loadLogs();
+        }
+
+        function exportLogs() {
+            alert('📥 Esportazione log in CSV in corso...');
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadStaffForFilter();
+        loadLogs();
+    </script>
+</body>
+</html>

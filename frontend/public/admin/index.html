@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info">
+                    <a href="#">Javascript Logger</a> | <strong>Admin</strong> (Founder)
+                </div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab active">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title"> menu</div>
+            <ul class="sidebar-menu">
+                <li class="active"><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html"> Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍ Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html"> Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Dashboard: Overview</div>
+                <div class="section-actions">
+                    <button class="btn" onclick="location.reload()">🔄 ricarica</button>
+                </div>
+            </div>
+
+            <div class="alerts-container">
+                <div class="alert alert-warning">⚠️ <strong>5 ticket urgenti</strong> non assegnati - Richiedono attenzione immediata</div>
+                <div class="alert alert-danger">🚨 <strong>3 segnalazioni</strong> di contenuti inappropriati in attesa di moderazione</div>
+                <div class="alert alert-info">️ Backup database completato alle 03:00</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Utenti Attivi Oggi</div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-change positive">↑ 12% vs ieri</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Nuove Registrazioni</div>
+                    <div class="stat-value">89</div>
+                    <div class="stat-change positive">↑ 8% vs ieri</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Anime Giudicate (Totale)</div>
+                    <div class="stat-value">45,892</div>
+                    <div class="stat-change positive">↑ 234 oggi</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Ticket Aperti</div>
+                    <div class="stat-value">23</div>
+                    <div class="stat-change negative">↑ 5 nuovi</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">🔥 Inferno</div>
+                    <div class="stat-value">42%</div>
+                    <div class="stat-change">19,274 anime</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">⛰️ Purgatorio</div>
+                    <div class="stat-value">28%</div>
+                    <div class="stat-change">12,850 anime</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">✨ Paradiso</div>
+                    <div class="stat-value">30%</div>
+                    <div class="stat-change">13,768 anime</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Traffico Server</div>
+                    <div class="stat-value">847</div>
+                    <div class="stat-change">req/sec</div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <div class="quick-actions-title">⚡ Azioni Rapide</div>
+                <div class="quick-actions-grid">
+                    <div class="quick-action-btn" onclick="openModal('addUserModal')">+ Nuovo Utente</div>
+                    <div class="quick-action-btn" onclick="openModal('addSoulModal')">+ Nuova Anima</div>
+                    <div class="quick-action-btn" onclick="location.href='tickets.html'"> Gestisci Ticket</div>
+                    <div class="quick-action-btn" onclick="location.href='moderation.html'">🛡️ Moderazione</div>
+                    <div class="quick-action-btn" onclick="openModal('addAnnouncementModal')"> Nuovo Annuncio</div>
+                    <div class="quick-action-btn" onclick="exportData()">📥 Esporta Dati</div>
+                    <div class="quick-action-btn" onclick="location.href='staff.html'">👨‍💼 Gestione Staff</div>
+                    <div class="quick-action-btn" onclick="location.href='security.html'">🔒 Blacklist</div>
+                </div>
+            </div>
+
+            <div class="activity-log">
+                <div class="quick-actions-title">📜 Attività Recente</div>
+                <div class="activity-item">
+                    <div class="activity-time">14:32:15</div>
+                    <div><strong>Marco Rossi</strong> ha giudicato <strong>Elon Musk</strong> → Inferno</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">14:28:42</div>
+                    <div><strong>Laura Bianchi</strong> ha creato un nuovo ticket: "Problema con login"</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">14:25:10</div>
+                    <div><strong>Giuseppe Verdi</strong> ha aggiunto 3 anime al suo aldilà</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">14:20:33</div>
+                    <div><strong>Anna Neri</strong> ha segnalato un commento inappropriato</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">14:15:08</div>
+                    <div><strong>Moderatore1</strong> ha bannato l'utente <strong>Luigi Gialli</strong></div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-time">14:10:22</div>
+                    <div><strong>Admin</strong> ha modificato le impostazioni di sicurezza</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div>
+            <select class="footer-select">
+                <option>TheFinalVerdict - Piattaforma Principale</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Aggiungi Nuovo Utente</h3>
+                <button class="close-btn" onclick="closeModal('addUserModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleFormSubmit(event, 'addUserModal')">
+                    <div class="form-group">
+                        <label class="form-label">Username *</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password Temporanea *</label>
+                        <input type="password" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ruolo</label>
+                        <select class="form-select">
+                            <option>Utente</option>
+                            <option>Moderatore</option>
+                            <option>Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">✅ Crea Utente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addSoulModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Aggiungi Nuova Anima</h3>
+                <button class="close-btn" onclick="closeModal('addSoulModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleFormSubmit(event, 'addSoulModal')">
+                    <div class="form-group">
+                        <label class="form-label">Nome *</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria *</label>
+                        <select class="form-select">
+                            <option>Personaggio Storico</option>
+                            <option>Celebrità</option>
+                            <option>Personaggio di Finzione</option>
+                            <option>Altro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Epoca</label>
+                        <input type="text" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nazionalità</label>
+                        <input type="text" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Biografia</label>
+                        <textarea class="form-textarea"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">✅ Aggiungi Anima</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addAnnouncementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📢 Crea Nuovo Annuncio</h3>
+                <button class="close-btn" onclick="closeModal('addAnnouncementModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="handleFormSubmit(event, 'addAnnouncementModal')">
+                    <div class="form-group">
+                        <label class="form-label">Titolo *</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo *</label>
+                        <select class="form-select">
+                            <option>Banner Homepage</option>
+                            <option>Notifica Push</option>
+                            <option>Email di Massa</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contenuto *</label>
+                        <textarea class="form-textarea" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data Inizio *</label>
+                        <input type="datetime-local" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Data Fine *</label>
+                        <input type="datetime-local" class="form-input" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">📤 Pubblica Annuncio</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder', 'super_moderator'].includes(user.role)) {
+            alert('Accesso negato. Devi essere admin.');
+            window.location.href = '../login.html';
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+
+        function handleFormSubmit(event, modalId) {
+            event.preventDefault();
+            alert('✅ Operazione completata con successo!');
+            closeModal(modalId);
+            event.target.reset();
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = '../login.html';
+            }
+        }
+
+        function exportData() {
+            alert(' Esportazione dati in corso...');
+        }
+    </script>
+</body>
+</html>

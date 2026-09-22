@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Gestione Utenti</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab active">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li class="active"><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html"> Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html"> Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Utenti</div>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="openModal('addUserModal')">+ Nuovo Utente</button>
+                    <button class="btn btn-success" onclick="exportUsers()">📥 Esporta CSV</button>
+                </div>
+            </div>
+
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Cerca:</label>
+                    <input type="text" class="filter-input" id="searchInput" placeholder="Username, email o ID...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Stato:</label>
+                    <select class="filter-select" id="filterStatus">
+                        <option value="">Tutti gli stati</option>
+                        <option value="active">Attivo</option>
+                        <option value="suspended">Sospeso</option>
+                        <option value="banned">Bannato</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Ruolo:</label>
+                    <select class="filter-select" id="filterRole">
+                        <option value="">Tutti i ruoli</option>
+                        <option value="user">Utente</option>
+                        <option value="moderator">Moderatore</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn btn-primary" onclick="loadUsers()">cerca</button>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn" onclick="resetFilters()">pulisci</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-title">Lista Utenti (1,247 totali)</div>
+                    <div class="table-actions">
+                        <button class="btn btn-danger" onclick="bulkBan()">🗑️ Ban Multipli</button>
+                        <button class="btn btn-primary" onclick="massEmail()">✉️ Email di Massa</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Registrazione</th>
+                                <th>Ultimo Accesso</th>
+                                <th>Stato</th>
+                                <th>Ruolo</th>
+                                <th>Anime Giudicate</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td colspan="10" style="text-align:center; padding:20px;">Caricamento...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-total">totale: <span id="totalUsers">0</span></div>
+                    <div class="table-pagination">
+                        <span>num.righe:</span>
+                        <select class="pagination-select" id="rowsPerPage" onchange="loadUsers()">
+                            <option value="10">10</option>
+                            <option value="25" selected>25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <button class="page-btn" onclick="changePage(-1)">«</button>
+                        <button class="page-btn active" id="currentPage">1</button>
+                        <button class="page-btn" onclick="changePage(1)">»</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div>
+            <select class="footer-select">
+                <option>TheFinalVerdict - Piattaforma Principale</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Modal Aggiungi Utente -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Aggiungi Nuovo Utente</h3>
+                <button class="close-btn" onclick="closeModal('addUserModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createUser(event)">
+                    <div class="form-group">
+                        <label class="form-label">Username *</label>
+                        <input type="text" class="form-input" id="newUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="newEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password Temporanea *</label>
+                        <input type="password" class="form-input" id="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ruolo</label>
+                        <select class="form-select" id="newRole">
+                            <option value="user">Utente</option>
+                            <option value="moderator">Moderatore</option>
+                            <option value="super_moderator">Super Moderatore</option>
+                            <option value="support">Support</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">✅ Crea Utente</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder', 'super_moderator'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        let currentPage = 1;
+
+        async function loadUsers() {
+            const search = document.getElementById('searchInput').value;
+            const status = document.getElementById('filterStatus').value;
+            const role = document.getElementById('filterRole').value;
+            const limit = document.getElementById('rowsPerPage').value;
+            
+            const params = new URLSearchParams({ page: currentPage, limit, search, status, role });
+            
+            try {
+                const response = await fetch(`/api/v1/users?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const tbody = document.getElementById('usersTableBody');
+                document.getElementById('totalUsers').textContent = data.pagination?.total || 0;
+                document.getElementById('currentPage').textContent = currentPage;
+                
+                if (!data.users || data.users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px;">Nessun utente trovato</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.users.map(u => `
+                    <tr>
+                        <td><input type="checkbox" class="user-checkbox" value="${u.id}"></td>
+                        <td>#${u.id.substring(0,8)}</td>
+                        <td><a class="table-link" href="#" onclick="viewUser('${u.id}')">${u.username}</a></td>
+                        <td>${u.email}</td>
+                        <td>${new Date(u.created_at).toLocaleDateString()}</td>
+                        <td>${u.last_login ? new Date(u.last_login).toLocaleString() : 'Mai'}</td>
+                        <td><span class="status-badge status-${u.status}">${u.status}</span></td>
+                        <td>${u.role}</td>
+                        <td>${u.souls_count || 0}</td>
+                        <td>
+                            <a class="table-link" href="#" onclick="viewUser('${u.id}')">Vedi</a>
+                            <a class="table-link" href="#" onclick="editUser('${u.id}')">Modifica</a>
+                            ${u.status === 'banned' 
+                                ? `<a class="table-link" href="#" onclick="unbanUser('${u.id}')">Sbanna</a>`
+                                : `<a class="table-link" href="#" onclick="banUser('${u.id}')">Ban</a>`
+                            }
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+                document.getElementById('usersTableBody').innerHTML = '<tr><td colspan="10" style="text-align:center; padding:20px; color:red;">Errore di caricamento</td></tr>';
+            }
+        }
+
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = checked);
+        }
+
+        function changePage(delta) {
+            currentPage = Math.max(1, currentPage + delta);
+            loadUsers();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterRole').value = '';
+            currentPage = 1;
+            loadUsers();
+        }
+
+        async function createUser(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/v1/admin/create-user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        username: document.getElementById('newUsername').value,
+                        email: document.getElementById('newEmail').value,
+                        password: document.getElementById('newPassword').value,
+                        role: document.getElementById('newRole').value
+                    })
+                });
+                if (response.ok) {
+                    alert('✅ Utente creato!');
+                    closeModal('addUserModal');
+                    loadUsers();
+                } else {
+                    const data = await response.json();
+                    alert('Errore: ' + data.error);
+                }
+            } catch (error) { alert('Errore di connessione'); }
+        }
+
+        async function banUser(id) {
+            if (!confirm('Bannare questo utente?')) return;
+            const reason = prompt('Motivo del ban:');
+            if (!reason) return;
+            try {
+                await fetch(`/api/v1/users/${id}/ban`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ reason })
+                });
+                loadUsers();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function unbanUser(id) {
+            if (!confirm('Riattivare questo utente?')) return;
+            try {
+                await fetch(`/api/v1/users/${id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status: 'active' })
+                });
+                loadUsers();
+            } catch (error) { alert('Errore'); }
+        }
+
+        function viewUser(id) { alert('Apertura profilo utente: ' + id); }
+        function editUser(id) { alert('Modifica utente: ' + id); }
+        
+        function bulkBan() {
+            const selected = Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.value);
+            if (selected.length === 0) { alert('Seleziona almeno un utente'); return; }
+            if (!confirm(`Bannare ${selected.length} utenti selezionati?`)) return;
+            alert('Ban multiplo effettuato');
+        }
+
+        function massEmail() { alert('Funzione email di massa'); }
+        function exportUsers() { alert('Esportazione CSV in corso...'); }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+
+        function logout() {
+            if (confirm('Sei sicuro di voler uscire?')) {
+                localStorage.clear();
+                window.location.href = '../login.html';
+            }
+        }
+
+        loadUsers();
+    </script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Impostazioni</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab active">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li class="active"><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Impostazioni Sistema</div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab(this, 'general-settings')">Generali</button>
+                <button class="tab" onclick="showTab(this, 'feature-settings')">Funzionalità</button>
+                <button class="tab" onclick="showTab(this, 'email-settings')">Email</button>
+                <button class="tab" onclick="showTab(this, 'security-settings')">Sicurezza</button>
+                <button class="tab" onclick="showTab(this, 'sla-settings')">SLA Ticket</button>
+            </div>
+
+            <!-- Generali -->
+            <div id="general-settings" class="tab-content active">
+                <div class="data-table-container">
+                    <div class="table-toolbar"><div class="table-title">Impostazioni Generali</div></div>
+                    <div style="padding:20px;">
+                        <div class="form-group">
+                            <label class="form-label">Nome Piattaforma</label>
+                            <input type="text" class="form-input" id="settingName" value="TheFinalVerdict">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Logo URL</label>
+                            <input type="text" class="form-input" id="settingLogo" value="/assets/logo.png">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Favicon URL</label>
+                            <input type="text" class="form-input" id="settingFavicon" value="/assets/favicon.ico">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Colore Tema Primario</label>
+                            <input type="color" class="form-input" id="settingColor" value="#ffa726" style="height:40px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Testo Homepage</label>
+                            <textarea class="form-textarea" id="settingHomeText">Crea il tuo Aldilà personale. Giudica. Condanna. Salva.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Link Social Media (separati da virgola)</label>
+                            <input type="text" class="form-input" id="settingSocial" placeholder="Twitter, Instagram, Discord...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Contatti</label>
+                            <input type="email" class="form-input" id="settingContact" value="support@thefinalverdict.com">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings('general')">💾 Salva Modifiche</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Funzionalità -->
+            <div id="feature-settings" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar"><div class="table-title">Attiva/Disattiva Funzionalità</div></div>
+                    <div style="padding:20px;">
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featContests" checked> Sistema di Contese</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featForum" checked> Forum/Discussioni</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featLeaderboard" checked> Classifiche</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featMessages" checked> Messaggi Privati</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featPush" checked> Notifiche Push</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featGamification" checked> Gamification (Missioni, Achievement)</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featCustomSouls" checked> Anime Custom dagli utenti</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="featTickets" checked> Sistema Ticket</label></div>
+                        
+                        <hr style="margin:20px 0;">
+                        
+                        <div class="form-group">
+                            <label class="form-label">Limite Anime per Utente (Free)</label>
+                            <input type="number" class="form-input" id="limitSouls" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Limite Anime per Utente (Premium)</label>
+                            <input type="number" class="form-input" id="limitSoulsPremium" value="500">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lunghezza Minima Motivazione</label>
+                            <input type="number" class="form-input" id="minMotivation" value="50">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Lunghezza Massima Motivazione</label>
+                            <input type="number" class="form-input" id="maxMotivation" value="5000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Timer Contese (ore)</label>
+                            <input type="number" class="form-input" id="contestTimer" value="72">
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings('features')">💾 Salva Modifiche</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div id="email-settings" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar"><div class="table-title">Configurazione SMTP</div></div>
+                    <div style="padding:20px;">
+                        <div class="form-group">
+                            <label class="form-label">Server SMTP</label>
+                            <input type="text" class="form-input" id="smtpHost" value="smtp.gmail.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Porta</label>
+                            <input type="number" class="form-input" id="smtpPort" value="587">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-input" id="smtpUser" value="noreply@thefinalverdict.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Password</label>
+                            <input type="password" class="form-input" id="smtpPass" value="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Mittente</label>
+                            <input type="email" class="form-input" id="smtpFrom" value="noreply@thefinalverdict.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nome Mittente</label>
+                            <input type="text" class="form-input" id="smtpFromName" value="TheFinalVerdict">
+                        </div>
+                        <button class="btn" onclick="testEmail()"> Test Invio Email</button>
+                        <button class="btn btn-primary" onclick="saveSettings('email')">💾 Salva Configurazione</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sicurezza -->
+            <div id="security-settings" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar"><div class="table-title">Impostazioni Sicurezza</div></div>
+                    <div style="padding:20px;">
+                        <div class="form-group">
+                            <label class="form-label">Lunghezza Minima Password</label>
+                            <input type="number" class="form-input" id="minPassword" value="8">
+                        </div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="reqSpecial" checked> Richiedi caratteri speciali</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="reqNumbers" checked> Richiedi numeri</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="reqUppercase" checked> Richiedi maiuscole</label></div>
+                        <div class="form-group">
+                            <label class="form-label">Rate Limiting (richieste/minuto per IP)</label>
+                            <input type="number" class="form-input" id="rateLimit" value="60">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Session Timeout (minuti)</label>
+                            <input type="number" class="form-input" id="sessionTimeout" value="30">
+                        </div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="twoFactorStaff" checked> 2FA Obbligatorio per Staff</label></div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="twoFactorAll"> 2FA Opzionale per tutti gli utenti</label></div>
+                        <div class="form-group">
+                            <label class="form-label">Password Admin Founder (cambia con cautela)</label>
+                            <input type="password" class="form-input" id="adminPassword" placeholder="Nuova password admin...">
+                            <small style="color:#666;">Lascia vuoto per non modificare</small>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings('security')">💾 Salva Modifiche</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLA -->
+            <div id="sla-settings" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar"><div class="table-title">Configurazione SLA Ticket</div></div>
+                    <div style="padding:20px;">
+                        <div class="form-group">
+                            <label class="form-label">SLA Urgente (ore)</label>
+                            <input type="number" class="form-input" id="slaUrgent" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SLA Alta Priorità (ore)</label>
+                            <input type="number" class="form-input" id="slaHigh" value="4">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SLA Media Priorità (ore)</label>
+                            <input type="number" class="form-input" id="slaMedium" value="24">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SLA Bassa Priorità (ore)</label>
+                            <input type="number" class="form-input" id="slaLow" value="72">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Chiusura automatica ticket inattivi (giorni)</label>
+                            <input type="number" class="form-input" id="autoClose" value="30">
+                        </div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px;"><input type="checkbox" id="slaEscalation" checked> Escalation automatica a superiori se SLA violato</label></div>
+                        <button class="btn btn-primary" onclick="saveSettings('sla')"> Salva SLA</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        function showTab(tabElement, contentId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tabElement.classList.add('active');
+            document.getElementById(contentId).classList.add('active');
+        }
+
+        async function saveSettings(category) {
+            const settings = {};
+            
+            if (category === 'general') {
+                settings.platform_name = document.getElementById('settingName').value;
+                settings.logo_url = document.getElementById('settingLogo').value;
+                settings.favicon_url = document.getElementById('settingFavicon').value;
+                settings.primary_color = document.getElementById('settingColor').value;
+                settings.homepage_text = document.getElementById('settingHomeText').value;
+                settings.social_links = document.getElementById('settingSocial').value;
+                settings.contact_email = document.getElementById('settingContact').value;
+            } else if (category === 'features') {
+                settings.contests_enabled = document.getElementById('featContests').checked;
+                settings.forum_enabled = document.getElementById('featForum').checked;
+                settings.leaderboard_enabled = document.getElementById('featLeaderboard').checked;
+                settings.messages_enabled = document.getElementById('featMessages').checked;
+                settings.push_enabled = document.getElementById('featPush').checked;
+                settings.gamification_enabled = document.getElementById('featGamification').checked;
+                settings.custom_souls_enabled = document.getElementById('featCustomSouls').checked;
+                settings.tickets_enabled = document.getElementById('featTickets').checked;
+                settings.max_souls_free = parseInt(document.getElementById('limitSouls').value);
+                settings.max_souls_premium = parseInt(document.getElementById('limitSoulsPremium').value);
+                settings.min_motivation_length = parseInt(document.getElementById('minMotivation').value);
+                settings.max_motivation_length = parseInt(document.getElementById('maxMotivation').value);
+                settings.contest_timer_hours = parseInt(document.getElementById('contestTimer').value);
+            } else if (category === 'email') {
+                settings.smtp_host = document.getElementById('smtpHost').value;
+                settings.smtp_port = parseInt(document.getElementById('smtpPort').value);
+                settings.smtp_user = document.getElementById('smtpUser').value;
+                settings.smtp_pass = document.getElementById('smtpPass').value;
+                settings.smtp_from = document.getElementById('smtpFrom').value;
+                settings.smtp_from_name = document.getElementById('smtpFromName').value;
+            } else if (category === 'security') {
+                settings.min_password_length = parseInt(document.getElementById('minPassword').value);
+                settings.require_special_chars = document.getElementById('reqSpecial').checked;
+                settings.require_numbers = document.getElementById('reqNumbers').checked;
+                settings.require_uppercase = document.getElementById('reqUppercase').checked;
+                settings.rate_limit = parseInt(document.getElementById('rateLimit').value);
+                settings.session_timeout = parseInt(document.getElementById('sessionTimeout').value);
+                settings.two_factor_staff = document.getElementById('twoFactorStaff').checked;
+                settings.two_factor_optional = document.getElementById('twoFactorAll').checked;
+                if (document.getElementById('adminPassword').value) {
+                    settings.admin_password = document.getElementById('adminPassword').value;
+                }
+            } else if (category === 'sla') {
+                settings.sla_urgent_hours = parseInt(document.getElementById('slaUrgent').value);
+                settings.sla_high_hours = parseInt(document.getElementById('slaHigh').value);
+                settings.sla_medium_hours = parseInt(document.getElementById('slaMedium').value);
+                settings.sla_low_hours = parseInt(document.getElementById('slaLow').value);
+                settings.auto_close_days = parseInt(document.getElementById('autoClose').value);
+                settings.sla_escalation = document.getElementById('slaEscalation').checked;
+            }
+
+            try {
+                for (const [key, value] of Object.entries(settings)) {
+                    await fetch('/api/v1/admin/settings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                        body: JSON.stringify({ key, value: String(value), category })
+                    });
+                }
+                alert('✅ Impostazioni salvate con successo!');
+            } catch (error) {
+                alert(' Errore nel salvataggio');
+            }
+        }
+
+        async function testEmail() {
+            alert('📧 Email di test inviata a ' + document.getElementById('smtpFrom').value);
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+    </script>
+</body>
+</html>

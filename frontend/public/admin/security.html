@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Sicurezza</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li class="active"><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Sicurezza & Blacklist</div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showTab(this, 'blacklist-users')">Utenti Bannati</button>
+                <button class="tab" onclick="showTab(this, 'ip-block')">IP Bloccati</button>
+                <button class="tab" onclick="showTab(this, 'word-filter')">Filtro Parole</button>
+                <button class="tab" onclick="showTab(this, 'email-block')">Email Bloccate</button>
+            </div>
+
+            <!-- Utenti Bannati -->
+            <div id="blacklist-users" class="tab-content active">
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">Utenti Bannati</div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="openModal('addBanModal')">+ Aggiungi a Blacklist</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Motivo</th>
+                                    <th>Data Ban</th>
+                                    <th>Bannato da</th>
+                                    <th>Scadenza</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bannedUsersTableBody">
+                                <tr><td colspan="8" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IP Bloccati -->
+            <div id="ip-block" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">IP Bloccati</div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="openModal('addIpModal')">+ Blocca IP</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>IP</th>
+                                    <th>Motivo</th>
+                                    <th>Categoria</th>
+                                    <th>Data Blocco</th>
+                                    <th>Scadenza</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ipTableBody">
+                                <tr><td colspan="6" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtro Parole -->
+            <div id="word-filter" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">Parole Vietate</div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="openModal('addWordModal')">+ Aggiungi Parola</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Parola</th>
+                                    <th>Categoria</th>
+                                    <th>Aggiunta da</th>
+                                    <th>Data</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="wordsTableBody">
+                                <tr><td colspan="5" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Bloccate -->
+            <div id="email-block" class="tab-content">
+                <div class="data-table-container">
+                    <div class="table-toolbar">
+                        <div class="table-title">Domini Email Bloccati</div>
+                        <div class="table-actions">
+                            <button class="btn btn-primary" onclick="openModal('addEmailModal')">+ Blocca Email/Dominio</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Email/Dominio</th>
+                                    <th>Motivo</th>
+                                    <th>Data</th>
+                                    <th>Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emailTableBody">
+                                <tr><td colspan="4" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addBanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🚫 Banna Utente</h3>
+                <button class="close-btn" onclick="closeModal('addBanModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="addBan(event)">
+                    <div class="form-group">
+                        <label class="form-label">Username o Email *</label>
+                        <input type="text" class="form-input" id="banTarget" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Motivo *</label>
+                        <textarea class="form-textarea" id="banReason" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Scadenza (opzionale, lascia vuoto per permanente)</label>
+                        <input type="datetime-local" class="form-input" id="banExpiry">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;"> Banna</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addIpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Blocca IP</h3>
+                <button class="close-btn" onclick="closeModal('addIpModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="addIp(event)">
+                    <div class="form-group">
+                        <label class="form-label">Indirizzo IP *</label>
+                        <input type="text" class="form-input" id="ipAddress" required placeholder="192.168.1.1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Motivo *</label>
+                        <textarea class="form-textarea" id="ipReason" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria</label>
+                        <select class="form-select" id="ipCategory">
+                            <option value="spam">Spam</option>
+                            <option value="attack">Attacco</option>
+                            <option value="abuse">Abuso</option>
+                            <option value="other">Altro</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">🚫 Blocca IP</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addWordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🚫 Aggiungi Parola Vietata</h3>
+                <button class="close-btn" onclick="closeModal('addWordModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="addWord(event)">
+                    <div class="form-group">
+                        <label class="form-label">Parola *</label>
+                        <input type="text" class="form-input" id="wordText" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria</label>
+                        <select class="form-select" id="wordCategory">
+                            <option value="hate_speech">Hate Speech</option>
+                            <option value="spam">Spam</option>
+                            <option value="nsfw">NSFW</option>
+                            <option value="violence">Violenza</option>
+                            <option value="other">Altro</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">🚫 Aggiungi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="addEmailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">🚫 Blocca Email/Dominio</h3>
+                <button class="close-btn" onclick="closeModal('addEmailModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="addEmail(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email o Dominio *</label>
+                        <input type="text" class="form-input" id="emailBlock" required placeholder="esempio.com o user@esempio.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Motivo</label>
+                        <textarea class="form-textarea" id="emailReason"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;"> Blocca</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder', 'super_moderator'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        function showTab(tabElement, contentId) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tabElement.classList.add('active');
+            document.getElementById(contentId).classList.add('active');
+        }
+
+        async function loadBlacklist(type) {
+            try {
+                const response = await fetch(`/api/v1/admin/blacklist?type=${type}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                return data.entries || [];
+            } catch (error) { console.error(error); return []; }
+        }
+
+        async function loadBannedUsers() {
+            const entries = await loadBlacklist('user');
+            const tbody = document.getElementById('bannedUsersTableBody');
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px;">Nessun utente bannato</td></tr>';
+                return;
+            }
+            tbody.innerHTML = entries.map(e => `
+                <tr>
+                    <td>${e.value.substring(0,8)}</td>
+                    <td>${e.value}</td>
+                    <td>-</td>
+                    <td>${e.reason || '-'}</td>
+                    <td>${new Date(e.created_at).toLocaleDateString()}</td>
+                    <td>${e.addedBy?.username || 'Admin'}</td>
+                    <td>${e.expires_at ? new Date(e.expires_at).toLocaleDateString() : 'Permanente'}</td>
+                    <td><a class="table-link" href="#" onclick="removeBlacklist('${e.id}', 'user')">Rimuovi</a></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadIPs() {
+            const entries = await loadBlacklist('ip');
+            const tbody = document.getElementById('ipTableBody');
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:20px;">Nessun IP bloccato</td></tr>';
+                return;
+            }
+            tbody.innerHTML = entries.map(e => `
+                <tr>
+                    <td><code>${e.value}</code></td>
+                    <td>${e.reason || '-'}</td>
+                    <td>${e.category || '-'}</td>
+                    <td>${new Date(e.created_at).toLocaleDateString()}</td>
+                    <td>${e.expires_at ? new Date(e.expires_at).toLocaleDateString() : 'Permanente'}</td>
+                    <td><a class="table-link" href="#" onclick="removeBlacklist('${e.id}', 'ip')">Sblocca</a></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadWords() {
+            const entries = await loadBlacklist('word');
+            const tbody = document.getElementById('wordsTableBody');
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">Nessuna parola bloccata</td></tr>';
+                return;
+            }
+            tbody.innerHTML = entries.map(e => `
+                <tr>
+                    <td><code>${e.value}</code></td>
+                    <td>${e.category || '-'}</td>
+                    <td>${e.addedBy?.username || 'Admin'}</td>
+                    <td>${new Date(e.created_at).toLocaleDateString()}</td>
+                    <td><a class="table-link" href="#" onclick="removeBlacklist('${e.id}', 'word')">Rimuovi</a></td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadEmails() {
+            const entries = await loadBlacklist('email');
+            const tbody = document.getElementById('emailTableBody');
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px;">Nessuna email bloccata</td></tr>';
+                return;
+            }
+            tbody.innerHTML = entries.map(e => `
+                <tr>
+                    <td><code>${e.value}</code></td>
+                    <td>${e.reason || '-'}</td>
+                    <td>${new Date(e.created_at).toLocaleDateString()}</td>
+                    <td><a class="table-link" href="#" onclick="removeBlacklist('${e.id}', 'email')">Rimuovi</a></td>
+                </tr>
+            `).join('');
+        }
+
+        async function removeBlacklist(id, type) {
+            if (!confirm('Rimuovere questa voce dalla blacklist?')) return;
+            try {
+                await fetch(`/api/v1/admin/blacklist/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                alert('✅ Rimosso');
+                refreshCurrentTab();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function addBan(event) {
+            event.preventDefault();
+            try {
+                await fetch('/api/v1/admin/blacklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        type: 'user',
+                        value: document.getElementById('banTarget').value,
+                        reason: document.getElementById('banReason').value,
+                        expires_at: document.getElementById('banExpiry').value || null
+                    })
+                });
+                alert('✅ Utente bannato');
+                closeModal('addBanModal');
+                loadBannedUsers();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function addIp(event) {
+            event.preventDefault();
+            try {
+                await fetch('/api/v1/admin/blacklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        type: 'ip',
+                        value: document.getElementById('ipAddress').value,
+                        reason: document.getElementById('ipReason').value,
+                        category: document.getElementById('ipCategory').value
+                    })
+                });
+                alert('✅ IP bloccato');
+                closeModal('addIpModal');
+                loadIPs();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function addWord(event) {
+            event.preventDefault();
+            try {
+                await fetch('/api/v1/admin/blacklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        type: 'word',
+                        value: document.getElementById('wordText').value,
+                        category: document.getElementById('wordCategory').value
+                    })
+                });
+                alert('✅ Parola aggiunta');
+                closeModal('addWordModal');
+                loadWords();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function addEmail(event) {
+            event.preventDefault();
+            try {
+                await fetch('/api/v1/admin/blacklist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        type: 'email',
+                        value: document.getElementById('emailBlock').value,
+                        reason: document.getElementById('emailReason').value
+                    })
+                });
+                alert('✅ Email bloccata');
+                closeModal('addEmailModal');
+                loadEmails();
+            } catch (error) { alert('Errore'); }
+        }
+
+        function refreshCurrentTab() {
+            const activeTab = document.querySelector('.tab-content.active');
+            if (activeTab.id === 'blacklist-users') loadBannedUsers();
+            else if (activeTab.id === 'ip-block') loadIPs();
+            else if (activeTab.id === 'word-filter') loadWords();
+            else if (activeTab.id === 'email-block') loadEmails();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadBannedUsers();
+        loadIPs();
+        loadWords();
+        loadEmails();
+    </script>
+</body>
+</html>

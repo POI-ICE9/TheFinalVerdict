@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Ruoli</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html"> Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li class="active"><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html"> Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Ruoli & Permessi</div>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="openModal('newRoleModal')">+ Nuovo Ruolo Custom</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-title">Ruoli di Sistema</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ruolo</th>
+                                <th>Descrizione</th>
+                                <th>Utenti</th>
+                                <th>Livello</th>
+                                <th>Permessi Principali</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rolesTableBody">
+                            <tr><td colspan="6" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section-header" style="margin-top:20px;">
+                <div class="section-title">Permessi Disponibili</div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-title">Lista Completa Permessi</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Descrizione</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissionsTableBody">
+                            <tr><td colspan="3" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <div id="newRoleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"> Crea Nuovo Ruolo Custom</h3>
+                <button class="close-btn" onclick="closeModal('newRoleModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createRole(event)">
+                    <div class="form-group">
+                        <label class="form-label">Nome Ruolo *</label>
+                        <input type="text" class="form-input" id="newRoleName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrizione</label>
+                        <textarea class="form-textarea" id="newRoleDesc"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Permessi (seleziona)</label>
+                        <div style="max-height:200px; overflow-y:auto; border:1px solid #999; padding:10px; border-radius:2px;">
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="manage_users"> manage_users</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="ban_users"> ban_users</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="moderate_content"> moderate_content</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="manage_tickets"> manage_tickets</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="manage_staff"> manage_staff</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="manage_settings"> manage_settings</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="view_analytics"> view_analytics</label>
+                            <label style="display:block; margin:5px 0;"><input type="checkbox" value="manage_souls"> manage_souls</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">💾 Crea Ruolo</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        const systemRoles = [
+            { name: 'founder', desc: 'Accesso completo - creatore piattaforma', level: 4, perms: 'Tutti i permessi' },
+            { name: 'admin', desc: 'Accesso completo a tutto il sistema', level: 3, perms: 'Tutti i permessi' },
+            { name: 'super_moderator', desc: 'Può moderare contenuti e utenti, ma non gestire staff', level: 2, perms: 'Moderazione, Utenti, Ticket' },
+            { name: 'moderator', desc: 'Può moderare contenuti, ma non utenti', level: 1, perms: 'Moderazione Contenuti' },
+            { name: 'content_manager', desc: 'Può gestire il database anime', level: 2, perms: 'Gestione Anime' },
+            { name: 'support', desc: 'Può rispondere ai ticket di supporto', level: 2, perms: 'Gestione Ticket' },
+            { name: 'analytics', desc: 'Può solo visualizzare dashboard e statistiche', level: 1, perms: 'Visualizzazione Analytics' },
+            { name: 'user', desc: 'Utente standard', level: 0, perms: 'Funzionalità base' }
+        ];
+
+        const permissions = [
+            { name: 'manage_users', category: 'users', desc: 'Gestire utenti (modifica, sospensione)' },
+            { name: 'ban_users', category: 'users', desc: 'Bannare utenti definitivamente' },
+            { name: 'moderate_content', category: 'moderation', desc: 'Moderare contenuti segnalati' },
+            { name: 'manage_tickets', category: 'tickets', desc: 'Gestire ticket di supporto' },
+            { name: 'manage_staff', category: 'staff', desc: 'Gestire membri dello staff' },
+            { name: 'manage_settings', category: 'settings', desc: 'Modificare impostazioni sistema' },
+            { name: 'view_analytics', category: 'analytics', desc: 'Visualizzare analytics e statistiche' },
+            { name: 'manage_souls', category: 'souls', desc: 'Gestire database globale anime' },
+            { name: 'send_announcements', category: 'communication', desc: 'Inviare annunci globali' },
+            { name: 'manage_blacklist', category: 'security', desc: 'Gestire blacklist IP/parole/utenti' },
+            { name: 'view_staff_logs', category: 'audit', desc: 'Visualizzare log attività staff' },
+            { name: 'mass_email', category: 'communication', desc: 'Inviare email di massa' }
+        ];
+
+        function loadRoles() {
+            const tbody = document.getElementById('rolesTableBody');
+            tbody.innerHTML = systemRoles.map(r => `
+                <tr>
+                    <td><strong>${r.name}</strong></td>
+                    <td>${r.desc}</td>
+                    <td>-</td>
+                    <td>${r.level}</td>
+                    <td>${r.perms}</td>
+                    <td>
+                        ${!['founder', 'user'].includes(r.name) ? `<a class="table-link" href="#" onclick="editRole('${r.name}')">Modifica Permessi</a>` : '-'}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadPermissions() {
+            const tbody = document.getElementById('permissionsTableBody');
+            tbody.innerHTML = permissions.map(p => `
+                <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category}</td>
+                    <td>${p.desc}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function createRole(event) {
+            event.preventDefault();
+            const name = document.getElementById('newRoleName').value;
+            const desc = document.getElementById('newRoleDesc').value;
+            const perms = Array.from(document.querySelectorAll('#newRoleModal input[type=checkbox]:checked')).map(cb => cb.value);
+            
+            alert(`✅ Ruolo "${name}" creato con permessi: ${perms.join(', ') || 'nessuno'}`);
+            closeModal('newRoleModal');
+        }
+
+        function editRole(roleName) {
+            alert(`Modifica permessi per: ${roleName}\n(Qui si aprirebbe un'interfaccia di editing permessi granulari)`);
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadRoles();
+        loadPermissions();
+    </script>
+</body>
+</html>

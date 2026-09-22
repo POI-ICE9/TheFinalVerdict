@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Analytics</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab active">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li class="active"><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Analytics & Statistiche</div>
+                <div class="section-actions">
+                    <select class="filter-select" id="periodSelect" onchange="loadAnalytics()">
+                        <option value="7">Ultimi 7 giorni</option>
+                        <option value="30" selected>Ultimi 30 giorni</option>
+                        <option value="90">Ultimi 90 giorni</option>
+                        <option value="365">Ultimo anno</option>
+                    </select>
+                    <button class="btn btn-success" onclick="exportReport()">📥 Esporta Report</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Crescita Utenti</div>
+                    <div class="stat-value" id="statGrowth">+23%</div>
+                    <div class="stat-change positive" id="statGrowthDetail">↑ 287 nuovi utenti</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Utenti Totali</div>
+                    <div class="stat-value" id="statTotalUsers">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Utenti Attivi</div>
+                    <div class="stat-value" id="statActiveUsers">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Engagement Rate</div>
+                    <div class="stat-value" id="statEngagement">0%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Retention Rate</div>
+                    <div class="stat-value" id="statRetention">54%</div>
+                    <div class="stat-change negative">↓ 2% vs periodo prec.</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Tempo Medio Sessione</div>
+                    <div class="stat-value" id="statSession">12.4m</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Nuove Registrazioni</div>
+                    <div class="stat-value" id="statNewReg">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Anime Giudicate</div>
+                    <div class="stat-value" id="statJudged">0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="color:#e65100; margin-bottom:15px; font-size:14px;">📈 Trend di Crescita Utenti</h3>
+                <div class="chart-placeholder" id="growthChart">
+                    [Grafico Lineare - Caricamento dati...]
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:15px;">
+                <div class="chart-container">
+                    <h3 style="color:#e65100; margin-bottom:15px; font-size:14px;">🥧 Distribuzione Anime per Regno</h3>
+                    <div class="chart-placeholder" id="realmChart">
+                        [Grafico a Torta - Caricamento...]
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 style="color:#e65100; margin-bottom:15px; font-size:14px;"> Heatmap Attività (Orari più attivi)</h3>
+                    <div class="chart-placeholder" id="heatmapChart">
+                        [Heatmap - Caricamento...]
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="color:#e65100; margin-bottom:15px; font-size:14px;">📊 Top 10 Anime Più Giudicate</h3>
+                <div id="topSoulsList"></div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="color:#e65100; margin-bottom:15px; font-size:14px;">🌍 Analisi Demografica Utenti</h3>
+                <div class="chart-placeholder">
+                    [Grafico Demografico - Implementare con Chart.js]
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder', 'analytics'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        async function loadAnalytics() {
+            const period = document.getElementById('periodSelect').value;
+            
+            try {
+                const response = await fetch(`/api/v1/admin/analytics?period=${period}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                document.getElementById('statTotalUsers').textContent = data.totalUsers || 0;
+                document.getElementById('statActiveUsers').textContent = data.activeUsers || 0;
+                document.getElementById('statEngagement').textContent = (data.engagementRate || 0) + '%';
+                
+                if (data.userGrowth && data.userGrowth.length > 0) {
+                    const first = data.userGrowth[0].count;
+                    const last = data.userGrowth[data.userGrowth.length - 1].count;
+                    const growth = first > 0 ? Math.round(((last - first) / first) * 100) : 0;
+                    document.getElementById('statGrowth').textContent = (growth >= 0 ? '+' : '') + growth + '%';
+                    document.getElementById('statGrowthDetail').textContent = `↑ ${last - first} nuovi utenti`;
+                    document.getElementById('statGrowthDetail').className = 'stat-change ' + (growth >= 0 ? 'positive' : 'negative');
+                    document.getElementById('statNewReg').textContent = last - first;
+                }
+
+                // Simula grafico crescita
+                renderGrowthChart(data.userGrowth || []);
+                renderRealmChart();
+                renderHeatmap();
+                loadTopSouls();
+            } catch (error) { console.error(error); }
+        }
+
+        function renderGrowthChart(data) {
+            const container = document.getElementById('growthChart');
+            if (data.length === 0) {
+                container.innerHTML = 'Nessun dato disponibile';
+                return;
+            }
+            const max = Math.max(...data.map(d => parseInt(d.count)));
+            const points = data.map((d, i) => {
+                const x = (i / (data.length - 1)) * 100;
+                const y = 100 - (parseInt(d.count) / max) * 80;
+                return `${x},${y}`;
+            }).join(' ');
+            
+            container.innerHTML = `
+                <svg viewBox="0 0 100 100" style="width:100%; height:250px;">
+                    <polyline points="${points}" fill="none" stroke="#f57c00" stroke-width="0.5"/>
+                    ${data.map((d, i) => {
+                        const x = (i / (data.length - 1)) * 100;
+                        const y = 100 - (parseInt(d.count) / max) * 80;
+                        return `<circle cx="${x}" cy="${y}" r="0.8" fill="#e65100"/>`;
+                    }).join('')}
+                </svg>
+                <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:10px; color:#666;">
+                    <span>${data[0].date}</span>
+                    <span>${data[data.length-1].date}</span>
+                </div>
+            `;
+        }
+
+        function renderRealmChart() {
+            const container = document.getElementById('realmChart');
+            container.innerHTML = `
+                <div style="padding:20px;">
+                    <div style="margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>🔥 Inferno</span><strong>42%</strong>
+                        </div>
+                        <div style="background:#eee; height:20px; border-radius:10px; overflow:hidden;">
+                            <div style="width:42%; background:#d32f2f; height:100%;"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>⛰️ Purgatorio</span><strong>28%</strong>
+                        </div>
+                        <div style="background:#eee; height:20px; border-radius:10px; overflow:hidden;">
+                            <div style="width:28%; background:#f57c00; height:100%;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <span>✨ Paradiso</span><strong>30%</strong>
+                        </div>
+                        <div style="background:#eee; height:20px; border-radius:10px; overflow:hidden;">
+                            <div style="width:30%; background:#fbc02d; height:100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderHeatmap() {
+            const container = document.getElementById('heatmapChart');
+            const days = ['Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab', 'Dom'];
+            const hours = Array.from({length: 24}, (_, i) => i);
+            
+            let html = '<div style="overflow-x:auto;"><table style="font-size:9px; border-collapse:collapse;">';
+            html += '<tr><th></th>' + hours.map(h => `<th>${h}</th>`).join('') + '</tr>';
+            days.forEach(day => {
+                html += `<tr><th>${day}</th>`;
+                hours.forEach(h => {
+                    const intensity = Math.random();
+                    const color = intensity > 0.7 ? '#f57c00' : intensity > 0.4 ? '#ffb74d' : intensity > 0.2 ? '#ffe0b2' : '#f5f5f5';
+                    html += `<td style="background:${color}; width:20px; height:15px; border:1px solid #ddd;"></td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</table></div>';
+            container.innerHTML = html;
+        }
+
+        async function loadTopSouls() {
+            try {
+                const response = await fetch('/api/v1/souls?limit=10&sortBy=total_judgments&order=DESC');
+                const data = await response.json();
+                const container = document.getElementById('topSoulsList');
+                
+                if (!data.souls || data.souls.length === 0) {
+                    container.innerHTML = '<div style="padding:20px; text-align:center;">Nessun dato</div>';
+                    return;
+                }
+
+                container.innerHTML = `<table style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f5f5f5;">
+                        <th style="padding:8px; border:1px solid #ddd;">#</th>
+                        <th style="padding:8px; border:1px solid #ddd; text-align:left;">Nome</th>
+                        <th style="padding:8px; border:1px solid #ddd;">Categoria</th>
+                        <th style="padding:8px; border:1px solid #ddd;">Giudizi</th>
+                    </tr></thead>
+                    <tbody>${data.souls.map((s, i) => `
+                        <tr>
+                            <td style="padding:8px; border:1px solid #ddd; text-align:center;"><strong>${i+1}</strong></td>
+                            <td style="padding:8px; border:1px solid #ddd;">${s.name}</td>
+                            <td style="padding:8px; border:1px solid #ddd; text-align:center;">${s.category}</td>
+                            <td style="padding:8px; border:1px solid #ddd; text-align:center;"><strong>${s.total_judgments}</strong></td>
+                        </tr>
+                    `).join('')}</tbody>
+                </table>`;
+            } catch (error) { console.error(error); }
+        }
+
+        function exportReport() {
+            alert(' Report in formato PDF/Excel in preparazione...');
+        }
+
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadAnalytics();
+    </script>
+</body>
+</html>

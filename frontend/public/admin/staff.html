@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Staff</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab active">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html">🎫 Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li class="active"><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html">📜 Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Staff</div>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="openModal('inviteStaffModal')">+ Invita Nuovo Membro</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box"><div class="stat-label">Membri Totali</div><div class="stat-value" id="statTotal">0</div></div>
+                <div class="stat-box"><div class="stat-label">Admin/Founder</div><div class="stat-value" id="statAdmin">0</div></div>
+                <div class="stat-box"><div class="stat-label">Moderatori</div><div class="stat-value" id="statMod">0</div></div>
+                <div class="stat-box"><div class="stat-label">Support</div><div class="stat-value" id="statSupport">0</div></div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-title">Membri dello Staff</div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Ruolo</th>
+                                <th>Data Inserimento</th>
+                                <th>Ultimo Accesso</th>
+                                <th>Azioni Staff</th>
+                                <th>Moderazioni</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr><td colspan="9" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <div id="inviteStaffModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">✉️ Invita Nuovo Membro dello Staff</h3>
+                <button class="close-btn" onclick="closeModal('inviteStaffModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="inviteStaff(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="inviteEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ruolo *</label>
+                        <select class="form-select" id="inviteRole" required>
+                            <option value="moderator">Moderator</option>
+                            <option value="super_moderator">Super Moderator</option>
+                            <option value="content_manager">Content Manager</option>
+                            <option value="support">Support</option>
+                            <option value="analytics">Analytics</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Messaggio Personalizzato (opzionale)</label>
+                        <textarea class="form-textarea" id="inviteMessage"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">📧 Invia Invito</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder'].includes(user.role)) {
+            alert('Accesso negato. Solo admin.');
+            window.location.href = '../login.html';
+        }
+
+        async function loadStaff() {
+            try {
+                const response = await fetch('/api/v1/staff', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const staff = data.staff || [];
+
+                document.getElementById('statTotal').textContent = staff.length;
+                document.getElementById('statAdmin').textContent = staff.filter(s => ['admin', 'founder'].includes(s.role)).length;
+                document.getElementById('statMod').textContent = staff.filter(s => ['moderator', 'super_moderator'].includes(s.role)).length;
+                document.getElementById('statSupport').textContent = staff.filter(s => s.role === 'support').length;
+
+                const tbody = document.getElementById('staffTableBody');
+                if (staff.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px;">Nessun membro staff</td></tr>';
+                    return;
+                }
+
+                const roleColors = {
+                    founder: '#ffd700',
+                    admin: '#ff9800',
+                    super_moderator: '#9c27b0',
+                    moderator: '#2196f3',
+                    content_manager: '#4caf50',
+                    support: '#00bcd4',
+                    analytics: '#607d8b'
+                };
+
+                tbody.innerHTML = staff.map(s => `
+                    <tr>
+                        <td>#${s.id.substring(0,8)}</td>
+                        <td><a class="table-link" href="#">${s.username}</a></td>
+                        <td>${s.email}</td>
+                        <td><span class="status-badge" style="background:${roleColors[s.role] || '#999'}; color:white;">${s.role}</span></td>
+                        <td>${new Date(s.created_at).toLocaleDateString()}</td>
+                        <td>${s.last_login ? new Date(s.last_login).toLocaleString() : 'Mai'}</td>
+                        <td>${s.actionsCount || 0}</td>
+                        <td>-</td>
+                        <td>
+                            <a class="table-link" href="#" onclick="changeRole('${s.id}', '${s.username}')">Cambia Ruolo</a>
+                            ${s.role !== 'founder' ? `<a class="table-link" href="#" onclick="removeStaff('${s.id}', '${s.username}')">Rimuovi</a>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) { console.error(error); }
+        }
+
+        async function inviteStaff(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/v1/staff/invite', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        email: document.getElementById('inviteEmail').value,
+                        role: document.getElementById('inviteRole').value,
+                        message: document.getElementById('inviteMessage').value
+                    })
+                });
+                if (response.ok) {
+                    alert('✅ Invito inviato!');
+                    closeModal('inviteStaffModal');
+                    document.getElementById('inviteStaffModal').querySelector('form').reset();
+                } else {
+                    const data = await response.json();
+                    alert('Errore: ' + data.error);
+                }
+            } catch (error) { alert('Errore di connessione'); }
+        }
+
+        async function changeRole(id, username) {
+            const newRole = prompt(`Nuovo ruolo per ${username}:\n(moderator, super_moderator, content_manager, support, analytics)`);
+            if (!newRole) return;
+            try {
+                await fetch(`/api/v1/staff/${id}/role`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ role: newRole })
+                });
+                alert('✅ Ruolo aggiornato');
+                loadStaff();
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function removeStaff(id, username) {
+            if (!confirm(`Rimuovere ${username} dallo staff? Tornerà utente normale.`)) return;
+            try {
+                await fetch(`/api/v1/staff/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                alert('✅ Rimosso dallo staff');
+                loadStaff();
+            } catch (error) { alert('Errore'); }
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadStaff();
+    </script>
+</body>
+</html>

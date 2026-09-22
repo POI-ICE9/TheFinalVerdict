@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheFinalVerdict - Admin - Gestione Anime</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">⚖️</div>
+                <span>TheFinalVerdict - Admin</span>
+            </a>
+            <div class="header-right">
+                <div class="header-user-info"><a href="#">Javascript Logger</a> | <strong>Admin</strong></div>
+                <a href="../index.html" class="header-btn">Sito</a>
+                <button class="header-btn" onclick="logout()">logout</button>
+            </div>
+        </div>
+        <div class="menu-tabs">
+            <a href="index.html" class="menu-tab">Dashboard</a>
+            <a href="users.html" class="menu-tab">Utenti</a>
+            <a href="souls.html" class="menu-tab active">Anime</a>
+            <a href="tickets.html" class="menu-tab">Ticket</a>
+            <a href="moderation.html" class="menu-tab">Moderazione</a>
+            <a href="staff.html" class="menu-tab">Staff</a>
+            <a href="settings.html" class="menu-tab">Impostazioni</a>
+            <a href="analytics.html" class="menu-tab">Analytics</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">📋 menu</div>
+            <ul class="sidebar-menu">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="users.html">👥 Lista utenti</a></li>
+                <li class="active"><a href="souls.html">💀 Gestione anime</a></li>
+                <li><a href="tickets.html"> Ticket supporto</a></li>
+                <li><a href="moderation.html">🛡️ Moderazione</a></li>
+            </ul>
+            <div class="sidebar-section">
+                <div class="sidebar-title">👨‍💼 Staff</div>
+                <ul class="sidebar-menu">
+                    <li><a href="staff.html">Gestione staff</a></li>
+                    <li><a href="roles.html">Ruoli & Permessi</a></li>
+                    <li><a href="logs.html"> Log attività</a></li>
+                </ul>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-title">⚙️ Sistema</div>
+                <ul class="sidebar-menu">
+                    <li><a href="settings.html">Impostazioni</a></li>
+                    <li><a href="announcements.html">📢 Annunci</a></li>
+                    <li><a href="security.html">🔒 Sicurezza</a></li>
+                    <li><a href="analytics.html">📈 Analytics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="section-header">
+                <div class="section-title">Gestione: Anime (Database Globale)</div>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="openModal('addSoulModal')">+ Nuova Anima</button>
+                    <button class="btn btn-success" onclick="exportSouls()"> Esporta</button>
+                </div>
+            </div>
+
+            <div class="filters-bar">
+                <div class="filter-group">
+                    <label class="filter-label">Cerca:</label>
+                    <input type="text" class="filter-input" id="searchInput" placeholder="Nome anima...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Categoria:</label>
+                    <select class="filter-select" id="filterCategory">
+                        <option value="">Tutte le categorie</option>
+                        <option value="historical">Personaggi Storici</option>
+                        <option value="celebrity">Celebrità</option>
+                        <option value="fictional">Personaggi di Finzione</option>
+                        <option value="personal">Custom</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Stato:</label>
+                    <select class="filter-select" id="filterStatus">
+                        <option value="">Tutti gli stati</option>
+                        <option value="approved">Approvato</option>
+                        <option value="pending">In Attesa</option>
+                        <option value="rejected">Rifiutato</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn btn-primary" onclick="loadSouls()">cerca</button>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">&nbsp;</label>
+                    <button class="btn" onclick="resetFilters()">pulisci</button>
+                </div>
+            </div>
+
+            <div class="data-table-container">
+                <div class="table-toolbar">
+                    <div class="table-title">Anime nel Database (3,847 totali)</div>
+                    <div class="table-actions">
+                        <button class="btn btn-warning" onclick="mergeSouls()"> Merge Duplicati</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>Categoria</th>
+                                <th>Epoca</th>
+                                <th>Nazionalità</th>
+                                <th>Giudizi Totali</th>
+                                <th>Distribuzione</th>
+                                <th>Stato</th>
+                                <th>Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="soulsTableBody">
+                            <tr><td colspan="9" style="text-align:center; padding:20px;">Caricamento...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="table-total">totale: <span id="totalSouls">0</span></div>
+                    <div class="table-pagination">
+                        <span>num.righe:</span>
+                        <select class="pagination-select">
+                            <option>10</option><option selected>25</option><option>50</option>
+                        </select>
+                        <button class="page-btn">«</button>
+                        <button class="page-btn active">1</button>
+                        <button class="page-btn">2</button>
+                        <button class="page-btn">3</button>
+                        <button class="page-btn">»</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div><a href="#">bibl.corrente</a> | TheFinalVerdict Admin v1.0 - © 2026</div>
+        <div><select class="footer-select"><option>TheFinalVerdict - Piattaforma Principale</option></select></div>
+    </div>
+
+    <div id="addSoulModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">➕ Aggiungi Nuova Anima</h3>
+                <button class="close-btn" onclick="closeModal('addSoulModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <form onsubmit="createSoul(event)">
+                    <div class="form-group">
+                        <label class="form-label">Nome *</label>
+                        <input type="text" class="form-input" id="soulName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Categoria *</label>
+                        <select class="form-select" id="soulCategory" required>
+                            <option value="historical">Personaggio Storico</option>
+                            <option value="celebrity">Celebrità</option>
+                            <option value="fictional">Personaggio di Finzione</option>
+                            <option value="personal">Custom</option>
+                            <option value="other">Altro</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Epoca</label>
+                        <input type="text" class="form-input" id="soulEpoch">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nazionalità</label>
+                        <input type="text" class="form-input" id="soulNationality">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Biografia</label>
+                        <textarea class="form-textarea" id="soulBio"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">✅ Aggiungi Anima</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('accessToken');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || !['admin', 'founder', 'super_moderator', 'content_manager'].includes(user.role)) {
+            alert('Accesso negato.');
+            window.location.href = '../login.html';
+        }
+
+        async function loadSouls() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('filterCategory').value;
+            const status = document.getElementById('filterStatus').value;
+            
+            const params = new URLSearchParams({ search, status });
+            if (category) params.append('category', category);
+            
+            try {
+                const response = await fetch(`/api/v1/souls?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const tbody = document.getElementById('soulsTableBody');
+                document.getElementById('totalSouls').textContent = data.pagination?.total || 0;
+                
+                if (!data.souls || data.souls.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:20px;">Nessuna anima trovata</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.souls.map(s => {
+                    const total = (s.inferno_count || 0) + (s.purgatorio_count || 0) + (s.paradiso_count || 0);
+                    const infPct = total > 0 ? Math.round((s.inferno_count / total) * 100) : 0;
+                    const purgPct = total > 0 ? Math.round((s.purgatorio_count / total) * 100) : 0;
+                    const parPct = total > 0 ? Math.round((s.paradiso_count / total) * 100) : 0;
+                    
+                    return `
+                        <tr>
+                            <td>#${s.id.substring(0,8)}</td>
+                            <td><a class="table-link" href="../soul-detail.html?id=${s.id}">${s.name}</a></td>
+                            <td>${s.category}</td>
+                            <td>${s.epoch || '-'}</td>
+                            <td>${s.nationality || '-'}</td>
+                            <td>${s.total_judgments || 0}</td>
+                            <td>🔥${infPct}% | ⛰️${purgPct}% | ✨${parPct}%</td>
+                            <td><span class="status-badge status-${s.status === 'approved' ? 'active' : s.status === 'pending' ? 'pending' : 'banned'}">${s.status}</span></td>
+                            <td>
+                                ${s.status === 'pending' 
+                                    ? `<a class="table-link" href="#" onclick="approveSoul('${s.id}')">Approva</a>
+                                       <a class="table-link" href="#" onclick="rejectSoul('${s.id}')">Rifiuta</a>`
+                                    : `<a class="table-link" href="#" onclick="editSoul('${s.id}')">Modifica</a>
+                                       <a class="table-link" href="#" onclick="deleteSoul('${s.id}')">Elimina</a>`
+                                }
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        async function createSoul(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch('/api/v1/souls', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        name: document.getElementById('soulName').value,
+                        category: document.getElementById('soulCategory').value,
+                        epoch: document.getElementById('soulEpoch').value,
+                        nationality: document.getElementById('soulNationality').value,
+                        biography: document.getElementById('soulBio').value
+                    })
+                });
+                if (response.ok) {
+                    alert('✅ Anima aggiunta!');
+                    closeModal('addSoulModal');
+                    loadSouls();
+                } else {
+                    const data = await response.json();
+                    alert('Errore: ' + data.error);
+                }
+            } catch (error) { alert('Errore'); }
+        }
+
+        async function approveSoul(id) {
+            if (!confirm('Approvare questa anima?')) return;
+            await fetch(`/api/v1/souls/${id}/approve`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } });
+            loadSouls();
+        }
+
+        async function rejectSoul(id) {
+            const reason = prompt('Motivo del rifiuto:');
+            if (!reason) return;
+            await fetch(`/api/v1/souls/${id}/reject`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ reason })
+            });
+            loadSouls();
+        }
+
+        function editSoul(id) { alert('Modifica anima: ' + id); }
+        async function deleteSoul(id) {
+            if (!confirm('Eliminare questa anima? Azione irreversibile.')) return;
+            await fetch(`/api/v1/souls/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            loadSouls();
+        }
+
+        function mergeSouls() { alert('Seleziona due anime da unire'); }
+        function exportSouls() { alert('Esportazione in corso...'); }
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterCategory').value = '';
+            document.getElementById('filterStatus').value = '';
+            loadSouls();
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        window.onclick = (e) => { if (e.target.classList.contains('modal')) e.target.classList.remove('active'); };
+        function logout() {
+            if (confirm('Sei sicuro?')) { localStorage.clear(); window.location.href = '../login.html'; }
+        }
+
+        loadSouls();
+    </script>
+</body>
+</html>
